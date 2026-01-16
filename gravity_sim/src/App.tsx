@@ -6,11 +6,12 @@ import Scene from './pages/Scene';
 
 function App() {
   return (
-    <div>
+    <div className='h-full w-full'>
       {/* Navigation Menu */}
       <nav className="p-4 bg-base-200">
         <Link to="/" className="mr-4 btn btn-ghost">Home</Link>
         <Link to="/about" className="btn btn-ghost">About</Link>
+        <Link to="/scene" className='btn btn-ghost'>Simulator</Link>
       </nav>
 
       {/* Route Definitions */}
