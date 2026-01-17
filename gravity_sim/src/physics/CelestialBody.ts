@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+// import { degToRad } from 'three/src/math/MathUtils.js';
 
 export class CelestialBody {
   mass: number;
@@ -18,7 +19,12 @@ export class CelestialBody {
     this.radius = radius;
   }
 
-  updatePhysics(deltaTime: number, allBodies: CelestialBody[]) {
+  updatePosition(deltaTime: number) {
+    this.position.x += this.velocity.x * deltaTime;
+    this.position.y += this.velocity.y * deltaTime;
+    this.position.z += this.velocity.z * deltaTime;
+
+    console.log(this.position);
   }
 
 }

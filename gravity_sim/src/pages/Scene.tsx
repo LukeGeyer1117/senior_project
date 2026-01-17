@@ -4,6 +4,7 @@ import { OrbitControls } from '@react-three/drei';
 import { useMemo } from "react";    
 import { CelestialBody } from "../physics/CelestialBody";
 import VisualizeBody from "../components/VisualizeBody";
+import CalculateGravity from "../components/CalculateGravity";
 
 interface PhysicsTickProps {
     bodies: CelestialBody[];
@@ -11,8 +12,9 @@ interface PhysicsTickProps {
 
 function PhysicsTick({bodies}: PhysicsTickProps) {
     useFrame((state, delta) => {
+        CalculateGravity(bodies, delta);
         bodies.forEach(body => {
-            body.updatePhysics(delta, bodies);
+            body.updatePosition(delta);
         });
     });
 
@@ -22,8 +24,29 @@ function PhysicsTick({bodies}: PhysicsTickProps) {
 export default function Scene() {
     const bodies = useMemo(() => {
         return [
-            new CelestialBody(10000, [0,0,0], [0,0,0], 2),
-            new CelestialBody(50, [15, 0, 0], [0, 0, 0], .5)
+            // Sun
+            new CelestialBody(
+                333000,
+                [0, 0, 0],        // position
+                [0, 0, 0],        // velocity
+                3.0               // radius (big, dominant)
+            ),
+
+            // Earth
+            new CelestialBody(
+                1,
+                [10, 0, 0],       // 20 units from Sun
+                [0, .5, 0],     // circular orbit velocity
+                1.0               // radius
+            ),
+
+            // Moon
+            new CelestialBody(
+                0.012,
+                [12, 0, 0],       // 3 units from Earth
+                [0, .6, 0],    // Earth velocity + Moon orbit
+                0.4               // radius
+            ),
         ];
     }, []);
 
