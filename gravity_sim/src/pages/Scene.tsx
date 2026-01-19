@@ -26,7 +26,7 @@ export default function Scene() {
         return [
             // Sun
             new CelestialBody(
-                1.989e30,
+                333000,
                 [0, 0, 0],        // position
                 [0, 0, 0],        // velocity
                 3.0               // radius (big, dominant)
@@ -34,18 +34,18 @@ export default function Scene() {
 
             // Earth
             new CelestialBody(
-                5.97e24,
+                1,
                 [10, 0, 0],       // 20 units from Sun
-                [0, 0, 0],     // circular orbit velocity
-                1.0               // radius
+                [0, 0, 3],     // circular orbit velocity
+                .1               // radius
             ),
 
             // Moon
             new CelestialBody(
-                7.35e22,
-                [12, 0, 0],       // 3 units from Earth
-                [0, 0, 0],    // Earth velocity + Moon orbit
-                0.4               // radius
+                .01,
+                [10.5, 0, 0],       // 3 units from Earth
+                [0, 0, 3],    // Earth velocity + Moon orbit
+                0.01               // radius
             ),
         ];
     }, []);
