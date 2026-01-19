@@ -1,6 +1,6 @@
 import { CelestialBody } from "../physics/CelestialBody";
 
-const GRAVITY_CONSTANT = 6.674e-11;
+const GRAVITY_CONSTANT = 6.674e-10;
 
 export default function CalculateGravity(allBodies: CelestialBody[], dt: number) {
     for (let i = 0; i < allBodies.length; i++) {
