@@ -51,15 +51,33 @@ export default function Scene() {
     }, []);
 
     return (
-    <Canvas className="w-full h-full bg-black">
-        <ambientLight intensity={0.5} />
-        <spotLight position={[10,10,10]} angle={0.15} penumbra={1} />
+    <Canvas shadows className="w-full h-full bg-black">
+        <ambientLight intensity={0.2} />
+        <spotLight 
+            intensity={1} 
+            castShadow 
+            shadow-mapSize-width={2048} 
+            shadow-mapSize-height={2048} 
+            position={[10,10,10]} 
+            angle={0.15} 
+            penumbra={1} 
+        />
 
         <OrbitControls />
 
         {bodies.map((body) => (
             <VisualizeBody bodyData={body} />
         ))}
+
+        <mesh
+        receiveShadow
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, -10, 0]}
+        >
+        <planeGeometry args={[200, 200]} />
+        <meshStandardMaterial color="#FFF" />
+        </mesh>
+
 
         <PhysicsTick bodies={bodies} />
     </Canvas>

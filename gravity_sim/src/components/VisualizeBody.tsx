@@ -17,7 +17,7 @@ export default function VisualizeBody({bodyData}: BodyVisualProps) {
     });
     
     return (
-        <mesh ref={meshRef}>
+        <mesh castShadow receiveShadow ref={meshRef}>
             <sphereGeometry args={[bodyData.radius, 32, 32]} />
             <meshStandardMaterial color={"yellow"} />
         </mesh>
