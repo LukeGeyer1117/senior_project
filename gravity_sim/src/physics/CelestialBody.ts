@@ -6,17 +6,20 @@ export class CelestialBody {
   position: THREE.Vector3;
   velocity: THREE.Vector3;
   radius: number;
+  color: string;
 
   constructor(
     mass: number, 
     position: [number, number, number], 
     velocity: [number, number, number], 
-    radius: number
+    radius: number,
+    color: string = "green",
   ) {
     this.mass = mass;
     this.position = new THREE.Vector3(...position);
     this.velocity = new THREE.Vector3(...velocity);
     this.radius = radius;
+    this.color = color;
   }
 
   updatePosition(deltaTime: number) {

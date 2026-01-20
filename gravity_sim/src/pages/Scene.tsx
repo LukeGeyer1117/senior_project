@@ -3,6 +3,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls } from '@react-three/drei';
 import { useMemo } from "react";    
 import { CelestialBody } from "../physics/CelestialBody";
+import { Star } from "../physics/Star";
 import VisualizeBody from "../components/VisualizeBody";
 import CalculateGravity from "../components/CalculateGravity";
 
@@ -25,11 +26,11 @@ export default function Scene() {
     const bodies = useMemo(() => {
         return [
             // Sun
-            new CelestialBody(
+            new Star(
                 333000,
                 [0, 0, 0],        // position
                 [0, 0, 0],        // velocity
-                3.0               // radius (big, dominant)
+                2.0               // radius (big, dominant)
             ),
 
             // Earth
@@ -37,7 +38,7 @@ export default function Scene() {
                 1,
                 [10, 0, 0],       // 20 units from Sun
                 [0, 0, 3],     // circular orbit velocity
-                .1               // radius
+                .5              // radius
             ),
 
             // Moon
@@ -52,16 +53,7 @@ export default function Scene() {
 
     return (
     <Canvas shadows className="w-full h-full bg-black">
-        <ambientLight intensity={0.2} />
-        <spotLight 
-            intensity={1} 
-            castShadow 
-            shadow-mapSize-width={2048} 
-            shadow-mapSize-height={2048} 
-            position={[10,10,10]} 
-            angle={0.15} 
-            penumbra={1} 
-        />
+        <ambientLight intensity={1} />
 
         <OrbitControls />
 
