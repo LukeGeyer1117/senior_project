@@ -53,7 +53,6 @@ export default function Scene() {
 
     return (
     <Canvas shadows className="w-full h-full bg-black">
-        <ambientLight intensity={1} />
 
         <OrbitControls />
 

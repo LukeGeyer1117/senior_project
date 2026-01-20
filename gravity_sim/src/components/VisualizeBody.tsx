@@ -24,20 +24,27 @@ export default function VisualizeBody({bodyData}: Props) {
     
     return (
         <>
-            <mesh castShadow receiveShadow ref={meshRef}>
+            <mesh castShadow={!(bodyData instanceof Star)} receiveShadow={!(bodyData instanceof Star)} ref={meshRef}>
                 <sphereGeometry args={[bodyData.radius, 32, 32]} />
-                <meshStandardMaterial color={bodyData.color} />
-            </mesh>
-
-            {bodyData instanceof Star && (
-                <pointLight
-                    ref={lightRef}
-                    color={bodyData.lightColor}
-                    intensity={bodyData.lightIntensity}
-                    distance={bodyData.radius * 50}
-                    castShadow
+                <meshStandardMaterial 
+                    color={bodyData.color}
+                    emissive={bodyData instanceof Star ? bodyData.lightColor : undefined}
+                    emissiveIntensity={bodyData instanceof Star ? bodyData.lightIntensity : 0}
+                    roughness={0.6}
+                    metalness={0.0}
                 />
-            )}
+                {bodyData instanceof Star && (
+                    <pointLight
+                        ref={lightRef}
+                        color={bodyData.lightColor}
+                        intensity={bodyData.lightIntensity}
+                        distance={1000}
+                        castShadow
+                        shadow-mapSize-width={1024}
+                        shadow-mapSize-height={1024}
+                    />
+                )}
+            </mesh>
         </>
     );
 }
