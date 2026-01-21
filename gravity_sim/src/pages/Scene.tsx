@@ -30,46 +30,40 @@ export default function Scene() {
                 333000,
                 [0, 0, 0],        // position
                 [0, 0, 0],        // velocity
-                2.0               // radius (big, dominant)
+                3.0,               // radius (big, dominant)   
+                "yellow",
+                "2k_sun.jpg"             
             ),
 
             // Earth
             new CelestialBody(
                 1,
-                [10, 0, 0],       // 20 units from Sun
-                [0, 0, 3],     // circular orbit velocity
-                .5              // radius
+                [20, 0, 0],       // 20 units from Sun
+                [0, 0, .2],     // circular orbit velocity
+                .1,              // radius
+                "white",
+                "2k_earth_daymap.jpg"
             ),
 
-            // Moon
-            new CelestialBody(
-                .01,
-                [10.5, 0, 0],       // 3 units from Earth
-                [0, 0, 3],    // Earth velocity + Moon orbit
-                0.01               // radius
-            ),
+            // // Moon
+            // new CelestialBody(
+            //     .01,
+            //     [21, 0, 0],       // 3 units from Earth
+            //     [0, 0, 3],    // Earth velocity + Moon orbit
+            //     0.01               // radius
+            // ),
         ];
     }, []);
 
     return (
     <Canvas shadows className="w-full h-full bg-black">
-
         <OrbitControls />
+
+        <ambientLight intensity={0.1} />
 
         {bodies.map((body) => (
             <VisualizeBody bodyData={body} />
         ))}
-
-        <mesh
-        receiveShadow
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[0, -10, 0]}
-        >
-        <planeGeometry args={[200, 200]} />
-        <meshStandardMaterial color="#FFF" />
-        </mesh>
-
-
         <PhysicsTick bodies={bodies} />
     </Canvas>
     );
