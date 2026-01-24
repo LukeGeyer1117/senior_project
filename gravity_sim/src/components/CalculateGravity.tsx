@@ -1,6 +1,11 @@
 import { CelestialBody } from "../physics/CelestialBody";
 
-const GRAVITY_CONSTANT = 6.674e-11;
+export const GRAVITY_CONSTANT = 39.478; // Scaled gravitational constant for simulation
+
+// 1.0 Time Units equals 1 Earth Year
+// 1.0 Distance Units equals 1 Astronomical Unit (AU) - average distance from Earth to Sun
+// 1.0 Mass Units equals 1 Solar Mass
+export const TIME_SCALE = 1;
 
 export default function CalculateGravity(allBodies: CelestialBody[], dt: number) {
     for (let i = 0; i < allBodies.length; i++) {
