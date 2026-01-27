@@ -55,7 +55,7 @@ export default function Scene() {
             <Canvas
                 shadows
                 className="w-full h-full bg-black"
-                camera={{ position: [0, 100, 300], fov: 60 }}
+                camera={{ position: [0, 100, 300], fov: 60, near: 0.1, far: 100000 }}
             >
                 <OrbitControls 
                     ref={controlsRef} 
