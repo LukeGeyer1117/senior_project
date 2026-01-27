@@ -1,8 +1,10 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import type { MutableRefObject, Dispatch, SetStateAction } from "react";
 import { useFrame, useLoader } from "@react-three/fiber";
 import * as THREE from "three";
 import { CelestialBody } from "../physics/CelestialBody";
 import { Star } from "../physics/Star";
+import { OrbitControls } from 'three-stdlib';
 
 // We need 2 Sub-Components. One for bodies with a texture, and one for bodies without.
 // --- SUB-COMPONENT 1: For bodies WITH a texture ---
@@ -40,14 +42,38 @@ const MaterialSolid = ({ bodyData }: { bodyData: CelestialBody }) => {
     );
 };
 
-interface Props {
-    bodyData: CelestialBody;
+// 1. Define Props Interfaces
+interface CameraProps {
+  focusedRef: MutableRefObject<THREE.Mesh | null> | null;
+  controlsRef: MutableRefObject<OrbitControls | null>;
 }
 
-export default function VisualizeBody({ bodyData }: Props) {
+
+
+// 2. The Camera Rig
+export const CameraController = ({ focusedRef, controlsRef }: CameraProps) => {
+  useFrame(() => {
+    if (focusedRef?.current && controlsRef?.current) {
+      const targetPos = new THREE.Vector3()
+      // Now TypeScript knows getWorldPosition exists on focusedRef.current
+      focusedRef.current.getWorldPosition(targetPos)
+      
+      controlsRef.current.target.lerp(targetPos, 0.1)
+      controlsRef.current.update()
+    }
+  })
+  return null
+}
+
+interface Props {
+    bodyData: CelestialBody;
+    setFocus: Dispatch<SetStateAction<MutableRefObject<THREE.Mesh | null> | null>>;
+}
+
+export default function VisualizeBody({ bodyData, setFocus }: Props) {
     const meshRef = useRef<THREE.Mesh>(null);
     // You don't strictly need a ref for the light anymore unless you plan to animate color/intensity
-    const lightRef = useRef<THREE.PointLight>(null);
+    const lightRef = useRef<THREE.PointLight>(null!);
 
     useFrame(() => {
         if (!meshRef.current) return;
@@ -64,6 +90,10 @@ export default function VisualizeBody({ bodyData }: Props) {
                 castShadow={!(bodyData instanceof Star)} 
                 receiveShadow={!(bodyData instanceof Star)} 
                 ref={meshRef}
+                onClick={(e) => {
+                    e.stopPropagation(); // Prevent click events from bubbling up
+                    setFocus(meshRef);
+                }}
             >
                 <sphereGeometry args={[bodyData.radius, 32, 32]} />
                 

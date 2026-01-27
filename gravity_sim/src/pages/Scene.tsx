@@ -1,106 +1,105 @@
-import React from "react";
+import React, { useMemo, useState, useRef } from "react";
+import type { MutableRefObject } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls } from '@react-three/drei';
-import { useMemo } from "react";    
+import { OrbitControls as OrbitControlsImpl } from 'three-stdlib'; 
+import * as THREE from "three";
+
 import { CelestialBody } from "../physics/CelestialBody";
 import { Star } from "../physics/Star";
-import VisualizeBody from "../components/VisualizeBody";
+import VisualizeBody, { CameraController } from "../components/VisualizeBody";
 import CalculateGravity from "../components/CalculateGravity";
 
+// --- Types ---
 interface PhysicsTickProps {
     bodies: CelestialBody[];
 }
 
-function PhysicsTick({bodies}: PhysicsTickProps) {
+function PhysicsTick({ bodies }: PhysicsTickProps) {
     useFrame((state, delta) => {
         CalculateGravity(bodies, delta);
-        bodies.forEach(body => {
-            body.updatePosition(delta);
-        });
+        bodies.forEach(body => body.updatePosition(delta));
     });
-
     return null;
 }
 
 export default function Scene() {
+    // 1. Define Bodies
     const bodies = useMemo(() => {
         return [
-            // Sun
-            new Star(
-                100.0,
-                [0, 0, 0],        // position
-                [0, 0, 0],        // velocity
-                20,               // radius (big, dominant)   
-                "white",
-                "2k_sun.jpg",
-                1,
-                5             
-            ),
-
-            // Earth
-            new CelestialBody(
-                0.0003003,
-                [100, 0, 0],       // 20 units from Sun
-                [0, 0, 62.83],     // circular orbit velocity
-                2,              // radius
-                "white",
-                "2k_earth_daymap.jpg"
-            ),
-
-            // Moon
-            new CelestialBody(
-                .000005,
-                [105, 0, 0],       // 3 units from Earth
-                [0, 0, 65],    // Earth velocity + Moon orbit
-                0.5,               // radius
-                "gray",
-                "2k_moon.jpg"
-            ),
+            new Star(100.0, [0, 0, 0], [0, 0, 0], 20, "white", "2k_sun.jpg", 1, 5),
+            new CelestialBody(0.0003003, [100, 0, 0], [0, 0, 50], 2, "white", "2k_earth_daymap.jpg"),
+            new CelestialBody(0.000005, [105, 0, 0], [0, 0, 1.4], 0.5, "gray", "2k_moon.jpg"),
         ];
     }, []);
 
+    const [focusedRef, setFocusedRef] = useState<MutableRefObject<THREE.Mesh | null> | null>(null);
+    const controlsRef = useRef<OrbitControlsImpl>(null);
+
+    // --- NEW: Handle Manual Panning ---
+    // If user Right Clicks (Button 2), they want to Pan. We must unlock the camera.
+    const handleCanvasClick = (e: React.PointerEvent) => {
+        // Button 2 is Right Click. Buttons 4/middle are often used for pan too.
+        if (e.button === 2) { 
+            setFocusedRef(null);
+        }
+    };
+
     return (
-    <div className="relative w-screen h-screen">
-        <Canvas 
-            shadows 
-            className="w-full h-full bg-black"
-            // Set initial camera position and field of view
-            camera={{ position: [0, 100, 300], fov: 60 }}
+        // Added onPointerDown to the container to catch interactions before they hit the canvas logic
+        <div 
+            className="relative w-screen h-screen"
+            onPointerDown={handleCanvasClick}
+            onContextMenu={(e) => e.preventDefault()} // Stop right-click menu showing up
+        >
+            <Canvas
+                shadows
+                className="w-full h-full bg-black"
+                camera={{ position: [0, 100, 300], fov: 60 }}
             >
-            <OrbitControls />
+                <OrbitControls 
+                    ref={controlsRef} 
+                    enablePan={true} // Ensure this is true
+                    enableZoom={true} 
+                    // Lower damping makes panning feel snappier
+                    dampingFactor={0.1}
+                />
 
-            <ambientLight intensity={0.1} />
+                <ambientLight intensity={0.1} />
 
-            {bodies.map((body) => (
-                <VisualizeBody bodyData={body} />
-            ))}
-            <PhysicsTick bodies={bodies} />
-        </Canvas>
+                <CameraController focusedRef={focusedRef} controlsRef={controlsRef} />
 
-        <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-6">
-            {/* Top Panel */}
-            <div className="pointer-events-auto bg-gray-900/80 text-white p-4 rounded-lg backdrop-blur-sm">
-                <h1 className="text-xl font-bold">Solar System Control</h1>
-                <p className="text-sm text-gray-300">OrbitControls work outside this box.</p>
-            </div>
+                {bodies.map((body, index) => (
+                    <VisualizeBody 
+                        key={index} 
+                        bodyData={body} 
+                        setFocus={setFocusedRef} 
+                    />
+                ))}
 
-            {/* Bottom Controls */}
-            <div className="flex gap-4">
-                <button 
-                    className="pointer-events-auto px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded transition"
-                    onClick={() => console.log('Resetting Camera...')}
-                >
-                    Reset Camera
-                </button>
-                
-                <button 
-                    className="pointer-events-auto px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded transition"
-                    onClick={() => console.log('Adding Body...')}
-                >
-                    Add Planet
-                </button>
+                <PhysicsTick bodies={bodies} />
+            </Canvas>
+
+            {/* UI Overlay */}
+            <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-6">
+                <div className="pointer-events-auto bg-gray-900/80 text-white p-4 rounded-lg backdrop-blur-sm">
+                    <h1 className="text-xl font-bold">Solar System Control</h1>
+                    <p className="text-sm text-gray-300">
+                        Left Click: Orbit • Right Click: Pan (Breaks Focus)
+                    </p>
+                </div>
+
+                {focusedRef && (
+                    <div className="pointer-events-auto flex justify-end">
+                        <button
+                            className="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded transition"
+                            onClick={() => setFocusedRef(null)}
+                        >
+                            Unlock Camera
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
-    </div>
     );
 }
