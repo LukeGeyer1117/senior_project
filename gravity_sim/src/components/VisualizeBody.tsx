@@ -75,11 +75,12 @@ export default function VisualizeBody({ bodyData, setFocus }: Props) {
     // You don't strictly need a ref for the light anymore unless you plan to animate color/intensity
     const lightRef = useRef<THREE.PointLight>(null!);
 
-    useFrame(() => {
+    useFrame((state, delta) => {
         if (!meshRef.current) return;
 
         // Move the MESH. The child light will ride along automatically.
         meshRef.current.position.copy(bodyData.position);
+        meshRef.current.rotation.y += (bodyData.spin * delta);
         
         // --- REMOVED THE LIGHT UPDATE LOOP HERE ---
     });

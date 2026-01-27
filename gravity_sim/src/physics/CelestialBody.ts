@@ -6,6 +6,7 @@ export class CelestialBody {
   position: THREE.Vector3;
   velocity: THREE.Vector3;
   radius: number;
+  spin: number;
   color: string;
   // Optional Texture Property
   texture?: string;
@@ -15,6 +16,7 @@ export class CelestialBody {
     position: [number, number, number], 
     velocity: [number, number, number], 
     radius: number,
+    spin: number = 0,
     color: string = "pink",
     texture?: string,
   ) {
@@ -22,6 +24,7 @@ export class CelestialBody {
     this.position = new THREE.Vector3(...position);
     this.velocity = new THREE.Vector3(...velocity);
     this.radius = radius;
+    this.spin = spin;
     this.color = color;
     this.texture = texture;
 

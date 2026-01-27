@@ -10,12 +10,13 @@ export class Star extends CelestialBody {
         position: [number, number, number],
         velocity: [number, number, number],
         radius: number,
+        spin: number = 0,
         color: string = "white",
         texture?: string,
         luminosity: number = 1,
         lightIntensity: number = 10
     ) {
-        super(mass, position, velocity, radius, color, texture);
+        super(mass, position, velocity, radius, spin, color, texture);
 
         this.luminosity = luminosity,
         this.lightColor = color;

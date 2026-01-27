@@ -27,9 +27,9 @@ export default function Scene() {
     // 1. Define Bodies
     const bodies = useMemo(() => {
         return [
-            new Star(100.0, [0, 0, 0], [0, 0, 0], 20, "white", "2k_sun.jpg", 1, 5),
-            new CelestialBody(0.0003003, [100, 0, 0], [0, 0, 50], 2, "white", "2k_earth_daymap.jpg"),
-            new CelestialBody(0.000005, [105, 0, 0], [0, 0, 1.4], 0.5, "gray", "2k_moon.jpg"),
+            new Star(100.0, [0, 0, 0], [0, 0, 0], 20, .2, "white", "2k_sun.jpg", 1, 5),
+            new CelestialBody(0.0003003, [100, 0, 0], [0, 0, 50], 2, .05, "white", "2k_earth_daymap.jpg"),
+            new CelestialBody(0.000005, [105, 0, 0], [0, 0, 1.4], 0.5, 0, "gray", "2k_moon.jpg"),
         ];
     }, []);
 
