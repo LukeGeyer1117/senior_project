@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import type { MutableRefObject, Dispatch, SetStateAction } from "react";
-import { useFrame, useLoader } from "@react-three/fiber";
+import { useFrame, useLoader, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { CelestialBody } from "../physics/CelestialBody";
 import { Star } from "../physics/Star";
@@ -50,20 +50,53 @@ interface CameraProps {
 
 
 
-// 2. The Camera Rig
 export const CameraController = ({ focusedRef, controlsRef }: CameraProps) => {
+  const { camera } = useThree(); // Access the actual camera object
+  const previousPos = useRef<THREE.Vector3>(new THREE.Vector3());
+  const isLocked = useRef(false);
+
   useFrame(() => {
-    if (focusedRef?.current && controlsRef?.current) {
-      const targetPos = new THREE.Vector3()
-      // Now TypeScript knows getWorldPosition exists on focusedRef.current
-      focusedRef.current.getWorldPosition(targetPos)
-      
-      controlsRef.current.target.lerp(targetPos, 0.1)
-      controlsRef.current.update()
+    if (!focusedRef?.current || !controlsRef?.current) {
+      isLocked.current = false;
+      return;
     }
-  })
-  return null
-}
+
+    const currentPos = new THREE.Vector3();
+    focusedRef.current.getWorldPosition(currentPos);
+
+    if (!isLocked.current) {
+      // FIRST FRAME OF LOCK:
+      // Just initialize the previous position so we don't jump
+      previousPos.current.copy(currentPos);
+      
+      // Optional: Smoothly fly the target to the object (Lerp)
+      controlsRef.current.target.lerp(currentPos, 0.1);
+      
+      // Once close enough, snap to lock mode
+      if (controlsRef.current.target.distanceTo(currentPos) < 0.1) {
+          isLocked.current = true;
+      }
+    } else {
+      // LOCKED MODE:
+      // 1. Calculate how much the planet moved since last frame
+      const delta = new THREE.Vector3().subVectors(currentPos, previousPos.current);
+
+      // 2. Move the CAMERA by that same amount
+      camera.position.add(delta);
+
+      // 3. Move the CONTROLS TARGET by that same amount
+      // (This keeps the pivot point exactly on the planet)
+      controlsRef.current.target.add(delta);
+      
+      // 4. Update memory for next frame
+      previousPos.current.copy(currentPos);
+    }
+
+    controlsRef.current.update();
+  });
+
+  return null;
+};
 
 interface Props {
     bodyData: CelestialBody;

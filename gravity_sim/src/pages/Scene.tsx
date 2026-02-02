@@ -29,7 +29,7 @@ export default function Scene() {
         return [
             new Star(100.0, [0, 0, 0], [0, 0, 0], 20, .2, "white", "2k_sun.jpg", 1, 5),
             new CelestialBody(0.0003003, [100, 0, 0], [0, 0, 50], 2, .05, "white", "2k_earth_daymap.jpg"),
-            new CelestialBody(0.000005, [105, 0, 0], [0, 0, 1.4], 0.5, 0, "gray", "2k_moon.jpg"),
+            new CelestialBody(0.000005, [102, 0, 0], [0, 0, 0], 0.5, 0, "gray", "2k_moon.jpg"),
         ];
     }, []);
 
@@ -81,12 +81,9 @@ export default function Scene() {
             </Canvas>
 
             {/* UI Overlay */}
-            <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-6">
-                <div className="pointer-events-auto bg-gray-900/80 text-white p-4 rounded-lg backdrop-blur-sm">
-                    <h1 className="text-xl font-bold">Solar System Control</h1>
-                    <p className="text-sm text-gray-300">
-                        Left Click: Orbit • Right Click: Pan (Breaks Focus)
-                    </p>
+            <div className="absolute inset-0 pointer-events-none flex flex-col justify-between">
+                <div className="pointer-events-auto bg-gray-900/80 text-white p-4 backdrop-blur-sm">
+                    <h1 className="text-3xl text-white font-mono">Space<span className="text-info">Box</span></h1>
                 </div>
 
                 {focusedRef && (
