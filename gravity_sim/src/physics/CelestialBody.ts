@@ -31,6 +31,14 @@ export class CelestialBody {
     console.log(this.texture);
   }
 
+  getPosition(): [number, number, number] {
+    return [this.position.x, this.position.y, this.position.z];
+  }
+
+  getVelocity(): [number, number, number] {
+    return [this.velocity.x, this.velocity.y, this.velocity.z];
+  }
+
   updatePosition(deltaTime: number) {
     this.position.x += this.velocity.x * deltaTime;
     this.position.y += this.velocity.y * deltaTime;

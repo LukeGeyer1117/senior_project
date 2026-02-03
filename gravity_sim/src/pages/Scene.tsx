@@ -9,6 +9,7 @@ import { CelestialBody } from "../physics/CelestialBody";
 import { Star } from "../physics/Star";
 import VisualizeBody, { CameraController } from "../components/VisualizeBody";
 import CalculateGravity from "../components/CalculateGravity";
+import { Grid } from "../components/VisualizeGrid";
 
 // --- Types ---
 interface PhysicsTickProps {
@@ -27,9 +28,8 @@ export default function Scene() {
     // 1. Define Bodies
     const bodies = useMemo(() => {
         return [
-            new Star(100.0, [0, 0, 0], [0, 0, 0], 20, .2, "white", "2k_sun.jpg", 1, 5),
-            new CelestialBody(0.0003003, [100, 0, 0], [0, 0, 50], 2, .05, "white", "2k_earth_daymap.jpg"),
-            new CelestialBody(0.000005, [102, 0, 0], [0, 0, 0], 0.5, 0, "gray", "2k_moon.jpg"),
+            new Star(100.0, [100, 50, 0], [0, 0, 25], 20, .2, "white", "2k_sun.jpg", 1, 5),
+            new Star(100.0, [-100, 50, 0], [0, 0, -25], 20, .2, "green", "2k_sun.jpg", 1, 5),
         ];
     }, []);
 
@@ -66,7 +66,7 @@ export default function Scene() {
                 />
 
                 <ambientLight intensity={0.1} />
-
+                <axesHelper args={[100]} />
                 <CameraController focusedRef={focusedRef} controlsRef={controlsRef} />
 
                 {bodies.map((body, index) => (
@@ -76,6 +76,8 @@ export default function Scene() {
                         setFocus={setFocusedRef} 
                     />
                 ))}
+
+                <Grid bodies={bodies} />
 
                 <PhysicsTick bodies={bodies} />
             </Canvas>
