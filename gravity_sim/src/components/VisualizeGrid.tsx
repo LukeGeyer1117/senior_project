@@ -13,9 +13,9 @@ export const Grid: React.FC<GridProps> = ({ bodies }) => {
     const meshRef = useRef<THREE.Mesh>(null);
 
     // Grid Configuration
-    const width = 500;
-    const height = 500;
-    const segments = 100; // Lowered slightly for performance, increase if needed
+    const width = 5000;
+    const height = 5000;
+    const segments = 150; // Lowered slightly for performance, increase if needed
 
     useFrame(() => {
         if (!meshRef.current) return;
@@ -45,7 +45,7 @@ export const Grid: React.FC<GridProps> = ({ bodies }) => {
                 const distance = Math.sqrt(dx * dx + dz * dz);
                 
                 // Calculate gravity drop
-                if (distance < 500) { // Optimization: Ignore very far objects
+                if (distance < 10000) { // Optimization: Ignore very far objects
                      totalInfluence += (GRAVITY_CONSTANT * body.mass) / (distance + 1); 
                 }
             }
@@ -64,7 +64,7 @@ export const Grid: React.FC<GridProps> = ({ bodies }) => {
     return (
         <mesh ref={meshRef} rotation={[-Math.PI / 2, 0, 0]}>
             <planeGeometry args={[width, height, segments, segments]} />
-            <meshBasicMaterial color="#0088ff" wireframe={true} side={THREE.DoubleSide} />
+            <meshBasicMaterial color="#97aabb" wireframe={true} side={THREE.DoubleSide} />
         </mesh>
     );
 };

@@ -20,7 +20,6 @@ export default function CalculateGravity(allBodies: CelestialBody[], dt: number)
 
             // Calculate distance between 3d points of the centers of body i and j
             const distanceSq = dx**2 + dy**2 + dz**2;
-            console.log(`Squared distance from body ${i} to body ${j}: ${distanceSq}`);
 
             // Use the formula F = G * (m1 * m2) / r^2 to calculate the force of gravity between the two objects
             const F = GRAVITY_CONSTANT * (a.mass * b.mass) / distanceSq;
