@@ -10,6 +10,7 @@ import { CelestialBody } from "../physics/CelestialBody";
 import { Star } from "../physics/Star";
 import VisualizeBody, { CameraController } from "../components/VisualizeBody";
 import CalculateGravity from "../components/CalculateGravity";
+// import Collide from "../components/Collision";
 import { Grid } from "../components/VisualizeGrid";
 import { Skybox } from "../components/Skybox";
 
@@ -20,6 +21,7 @@ interface PhysicsTickProps {
 
 function PhysicsTick({ bodies }: PhysicsTickProps) {
     useFrame((state, delta) => {
+        // Collide(bodies, delta);
         CalculateGravity(bodies, delta);
         bodies.forEach(body => body.updatePosition(delta));
     });
@@ -63,7 +65,7 @@ export default function Scene() {
             new CelestialBody(
                 2.0,
                 [-400, 0, 0],       // Starting on opposite side
-                [0, 0, 600],       // Velocity must be negative to orbit counter-clockwise from negative X
+                [-50, 0, 0],       // Velocity must be negative to orbit counter-clockwise from negative X
                 8,
                 0.01,
                 "white",
@@ -143,9 +145,28 @@ export default function Scene() {
             <div className="absolute inset-0 pointer-events-none flex flex-col justify-between">
                 <div className="pointer-events-auto bg-gray-900/80 text-white p-4 backdrop-blur-sm flex justify-between items-center">
                     <h1 className="text-3xl text-white font-mono">Space<span className="text-info">Box</span></h1>
-                    <div>
-                        <input type="checkbox" defaultChecked className="toggle toggle-info" checked={showGrid} onChange={(e) => setShowGrid(e.target.checked)}/>
-                        <span className="ml-2">Toggle Grid (Not Implemented)</span>
+                    <div className="dropdown dropdown-end">
+                        <div tabIndex={0} role="button" className="btn m-1 bg-transparent border-none">Grid Controls</div>
+                        <ul tabIndex="-1" className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+                            <li>
+                                <fieldset className="fieldset">
+                                    <legend className="fieldset-legend">Grid Size</legend>
+                                    <input id="grid-size-range" type="range" min={500} max={10000} defaultValue={200} className="range range-sm range-info"/>
+                                </fieldset>
+                            </li>
+                            <li>
+                                <fieldset className="fieldset">
+                                    <legend className="fieldset-legend">Grid Density</legend>
+                                    <input id="grid-density-range" type="range" min="20" max="300" defaultValue="40" className="range range-sm range-info" />
+                                </fieldset>
+                            </li>
+                            <li>
+                                <fieldset className="fieldset">
+                                    <legend className="fieldset-legend">Grid On/Off</legend>
+                                    <input type="checkbox" defaultChecked className="toggle toggle-sm toggle-info" checked={showGrid} onChange={(e) => setShowGrid(e.target.checked)}/>
+                                </fieldset>
+                            </li>
+                        </ul>
                     </div>
                 </div>
 

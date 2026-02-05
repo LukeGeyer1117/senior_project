@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 import { CelestialBody } from '../physics/CelestialBody';
@@ -11,13 +11,24 @@ interface GridProps {
 
 export const Grid: React.FC<GridProps> = ({ bodies }) => {
     const meshRef = useRef<THREE.Mesh>(null);
+    const [segments, setSegments] = useState(40);
+    const [size, setSize] = useState(10000);
 
     // Grid Configuration
-    const width = 5000;
-    const height = 5000;
-    const segments = 150; // Lowered slightly for performance, increase if needed
+    useEffect(() => {
+        const density_range = document.querySelector<HTMLInputElement>('#grid-density-range');
+        if (!density_range) return;
+
+        const handler = () => setSegments(Number(density_range.value));
+
+        density_range.addEventListener('input', handler);
+        return () => {density_range.removeEventListener('input', handler);}
+
+    }, [])
 
     useFrame(() => {
+        // Get the number of segements that the grid needs
+
         if (!meshRef.current) return;
 
         const geometry = meshRef.current.geometry;
@@ -63,8 +74,14 @@ export const Grid: React.FC<GridProps> = ({ bodies }) => {
 
     return (
         <mesh ref={meshRef} rotation={[-Math.PI / 2, 0, 0]}>
-            <planeGeometry args={[width, height, segments, segments]} />
-            <meshBasicMaterial color="#97aabb" wireframe={true} side={THREE.DoubleSide} />
+            <planeGeometry 
+            key={segments} 
+            args={[size, size, segments, segments]} />
+
+            <meshBasicMaterial 
+            color="#97aabb" 
+            wireframe={true} 
+            side={THREE.DoubleSide} />
         </mesh>
     );
 };
