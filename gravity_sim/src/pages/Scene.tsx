@@ -7,6 +7,7 @@ import * as THREE from "three";
 
 import { CelestialBody } from "../physics/CelestialBody";
 import { Star } from "../physics/Star";
+import { Planet } from "../physics/Planet";
 import VisualizeBody, { CameraController } from "../components/VisualizeBody";
 import CalculateGravity from "../components/CalculateGravity";
 // import Collide from "../components/Collision";
@@ -41,7 +42,7 @@ export default function Scene() {
                 0.005,              // Spin
                 "white",           // Color
                 "2k_sun.jpg",       // Texture
-                "Sun",              // Name
+                "Sol",              // Name
                 1.5,                // Luminosity
                 50                  // Light Intensity
             ),
@@ -49,7 +50,7 @@ export default function Scene() {
             // 2. Hot Inner Planet ("Mercury")
             // Distance: 70
             // Velocity: sqrt(1000 / 70) ≈ 3.7
-            new CelestialBody(
+            new Planet(
                 10.0,
                 [150, 0, 0],
                 [0, 0, 600],        // Slightly higher velocity for elliptical orbit
@@ -63,7 +64,7 @@ export default function Scene() {
             // 3. Earth-like Planet
             // Distance: 140
             // Velocity: sqrt(1000 / 140) ≈ 2.67
-            new CelestialBody(
+            new Planet(
                 2.0,
                 [-400, 0, 0],       // Starting on opposite side
                 [0, 0, 400],       // Velocity must be negative to orbit counter-clockwise from negative X
@@ -77,7 +78,7 @@ export default function Scene() {
             // 5. Gas Giant ("Jupiter")
             // Distance: 300
             // Velocity: sqrt(1000 / 300) ≈ 1.82
-            new CelestialBody(
+            new Planet(
                 15,              // Heavy mass
                 [0, 0, 1000],        // Starting on Z axis
                 [600, 0, 0],        // Tangential velocity on X axis
@@ -179,11 +180,30 @@ export default function Scene() {
                         <details>
                             <summary>Objects</summary>
                             <ul>
-                                {bodies.map((body) => (
                                 <li>
-                                    <a>{body.name}</a>
+                                <details>
+                                    <summary>Stars</summary>
+                                    <ul>
+                                        {bodies.map((body) => (
+                                            body instanceof Star &&(
+                                                <li key={body.name}><a>{body.name}</a></li>
+                                            )
+                                        ))}
+                                    </ul>
+                                </details>
                                 </li>
-                                ))}
+                                <li>
+                                    <details>
+                                        <summary>Planets</summary>
+                                        <ul>
+                                            {bodies.map((body) => (
+                                                body instanceof Planet &&(
+                                                    <li key={body.name}><a>{body.name}</a></li>
+                                                )
+                                            ))}
+                                        </ul>
+                                    </details>
+                                </li>
                             </ul>
                         </details>
                     </li>
