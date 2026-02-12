@@ -19,10 +19,19 @@ export const Grid: React.FC<GridProps> = ({ bodies }) => {
         const density_range = document.querySelector<HTMLInputElement>('#grid-density-range');
         if (!density_range) return;
 
-        const handler = () => setSegments(Number(density_range.value));
+        const size_range = document.querySelector<HTMLInputElement>('#grid-size-range');
+        if (!size_range) return;
 
-        density_range.addEventListener('input', handler);
-        return () => {density_range.removeEventListener('input', handler);}
+        const size_handler = () => setSize(Number(size_range.value));
+
+        const density_handler = () => setSegments(Number(density_range.value));
+
+        density_range.addEventListener('input', density_handler);
+        size_range.addEventListener('input', size_handler);
+        return () => {
+            density_range.removeEventListener('input', density_handler);
+            size_range.removeEventListener('input', size_handler);
+        };
 
     }, [])
 

@@ -65,7 +65,7 @@ export default function Scene() {
             new CelestialBody(
                 2.0,
                 [-400, 0, 0],       // Starting on opposite side
-                [-50, 0, 0],       // Velocity must be negative to orbit counter-clockwise from negative X
+                [0, 0, 400],       // Velocity must be negative to orbit counter-clockwise from negative X
                 8,
                 0.01,
                 "white",
@@ -151,7 +151,7 @@ export default function Scene() {
                             <li>
                                 <fieldset className="fieldset">
                                     <legend className="fieldset-legend">Grid Size</legend>
-                                    <input id="grid-size-range" type="range" min={500} max={10000} defaultValue={200} className="range range-sm range-info"/>
+                                    <input id="grid-size-range" type="range" min={500} max={100000} defaultValue={200} className="range range-sm range-info"/>
                                 </fieldset>
                             </li>
                             <li>
