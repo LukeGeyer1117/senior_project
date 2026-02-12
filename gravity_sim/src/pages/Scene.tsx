@@ -2,7 +2,6 @@ import React, { useMemo, useState, useRef } from "react";
 import type { MutableRefObject } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls } from '@react-three/drei';
-import { Environment } from "@react-three/drei";
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib'; 
 import * as THREE from "three";
 
@@ -42,6 +41,7 @@ export default function Scene() {
                 0.005,              // Spin
                 "white",           // Color
                 "2k_sun.jpg",       // Texture
+                "Sun",              // Name
                 1.5,                // Luminosity
                 50                  // Light Intensity
             ),
@@ -56,7 +56,8 @@ export default function Scene() {
                 4,
                 0.02,
                 "white",
-                "2k_mercury.jpg"       // Reusing Mars texture if available, or remove
+                "2k_mercury.jpg",       // Reusing Mars texture if available, or remove
+                "Mercury",
             ),
 
             // 3. Earth-like Planet
@@ -69,7 +70,8 @@ export default function Scene() {
                 8,
                 0.01,
                 "white",
-                "2k_earth_daymap.jpg"
+                "2k_earth_daymap.jpg",
+                "Earth",
             ),
 
             // 5. Gas Giant ("Jupiter")
@@ -82,7 +84,8 @@ export default function Scene() {
                 15,
                 0.04,
                 "orange",
-                "2k_jupiter.jpg"    // Use fallback color if texture missing
+                "2k_jupiter.jpg",    // Use fallback color if texture missing
+                "Jupiter",
             ),
         ];
     }, []);
@@ -143,11 +146,11 @@ export default function Scene() {
 
             {/* UI Overlay */}
             <div className="absolute inset-0 pointer-events-none flex flex-col justify-between">
-                <div className="pointer-events-auto bg-gray-900/80 text-white p-4 backdrop-blur-sm flex justify-between items-center">
+                <div className="pointer-events-auto bg-info-content/80 text-white p-4 backdrop-blur-sm flex justify-between items-center">
                     <h1 className="text-3xl text-white font-mono">Space<span className="text-info">Box</span></h1>
                     <div className="dropdown dropdown-end">
                         <div tabIndex={0} role="button" className="btn m-1 bg-transparent border-none">Grid Controls</div>
-                        <ul tabIndex="-1" className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+                        <ul tabIndex={-1} className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
                             <li>
                                 <fieldset className="fieldset">
                                     <legend className="fieldset-legend">Grid Size</legend>
@@ -163,23 +166,30 @@ export default function Scene() {
                             <li>
                                 <fieldset className="fieldset">
                                     <legend className="fieldset-legend">Grid On/Off</legend>
-                                    <input type="checkbox" defaultChecked className="toggle toggle-sm toggle-info" checked={showGrid} onChange={(e) => setShowGrid(e.target.checked)}/>
+                                    <input type="checkbox" className="toggle toggle-sm toggle-info" checked={showGrid} onChange={(e) => setShowGrid(e.target.checked)}/>
                                 </fieldset>
                             </li>
                         </ul>
                     </div>
                 </div>
 
-                {focusedRef && (
-                    <div className="pointer-events-auto flex justify-end">
-                        <button
-                            className="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded transition"
-                            onClick={() => setFocusedRef(null)}
-                        >
-                            Unlock Camera
-                        </button>
-                    </div>
-                )}
+                <div className="w-full h-full">
+                    <ul className="menu bg-info-content/70 w-50 h-full pointer-events-auto">
+                    <li>
+                        <details>
+                            <summary>Objects</summary>
+                            <ul>
+                                {bodies.map((body) => (
+                                <li>
+                                    <a>{body.name}</a>
+                                </li>
+                                ))}
+                            </ul>
+                        </details>
+                    </li>
+                    </ul>
+                </div>
+
             </div>
         </div>
     );

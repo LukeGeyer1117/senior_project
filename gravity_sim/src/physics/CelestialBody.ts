@@ -10,6 +10,7 @@ export class CelestialBody {
   color: string;
   // Optional Texture Property
   texture?: string;
+  name?: string;
 
   constructor(
     mass: number, 
@@ -19,6 +20,7 @@ export class CelestialBody {
     spin: number = 0,
     color: string = "pink",
     texture?: string,
+    name?: string,
   ) {
     this.mass = mass;
     this.position = new THREE.Vector3(...position);
@@ -27,8 +29,7 @@ export class CelestialBody {
     this.spin = spin;
     this.color = color;
     this.texture = texture;
-
-    console.log(this.texture);
+    this.name = name;
   }
 
   getPosition(): [number, number, number] {
