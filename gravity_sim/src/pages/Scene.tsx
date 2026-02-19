@@ -4,15 +4,18 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls } from '@react-three/drei';
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import * as THREE from "three";
-
-import { CelestialBody } from "../physics/CelestialBody";
 import { Star } from "../physics/Star";
+import { CelestialBody } from "../physics/CelestialBody";
 import { Planet } from "../physics/Planet";
 import VisualizeBody, { CameraController } from "../components/VisualizeBody";
 import CalculateGravity from "../components/CalculateGravity";
 // import Collide from "../components/Collision";
 import { Grid } from "../components/VisualizeGrid";
 import { Skybox } from "../components/Skybox";
+
+
+import { useStar } from "../physics/Star";
+import { usePlanet } from "../physics/Planet";
 
 // --- Types ---
 interface PhysicsTickProps {
@@ -49,17 +52,7 @@ export default function Scene() {
   const [showPlanetForm, setShowPlanetForm] = useState(false);
 
   // 1. Create a state object to hold the form values
-  const [starParams, setStarParams] = useState({
-    name: `Star-${Date.now()}`,
-    mass: 100,
-    spin: 0.1,
-    radius: 10,
-    posX: 0, posY: 0, posZ: 0,
-    velX: 0, velY: 0, velZ: 0,
-    color: "#ffffff",
-    intensity: 5,
-    texture: "2k_sun.jpg"
-  });
+  const [starParams, setStarParams] = useStar();
 
   // 2. Create the handler that triggers when you click the "Checkmark" button
   const handleConfirmStar = () => {
@@ -81,16 +74,7 @@ export default function Scene() {
     setStarParams(prev => ({ ...prev, name: `Star-${Date.now()}` }));
   };
 
-  const [planetParams, setPlanetParams] = useState({
-    name: `Planet-${Date.now()}`,
-    mass: 1,
-    spin: 0.1,
-    radius: 1.5,
-    posX: 150, posY: 0, posZ: 0,
-    velX: 0, velY: 0, velZ: 60,
-    color: "#FFFFFF",
-    texture: "2k_earth_daymap.jpg"
-  })
+  const [planetParams, setPlanetParams] = usePlanet();
 
   const handleConfirmPlanet = () => {
     console.log(planetParams);
@@ -318,7 +302,7 @@ export default function Scene() {
                         </li>
                         {bodies.map((body) => (
                           body instanceof Star && (
-                            <li key={body.name}><a>{body.name}</a></li>
+                            <li onClick={() => setFocusedRef(body.meshRef)} key={body.name}><a>{body.name}</a></li>
                           )
                         ))}
                       </ul>
@@ -441,7 +425,7 @@ export default function Scene() {
                         </li>
                         {bodies.map((body) => (
                           body instanceof Planet && (
-                            <li key={body.name}><a>{body.name}</a></li>
+                            <li onClick={() => setFocusedRef(body.meshRef)} key={body.name}><a>{body.name}</a></li>
                           )
                         ))}
                       </ul>

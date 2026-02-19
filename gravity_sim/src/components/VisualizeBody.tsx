@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import type { MutableRefObject, Dispatch, SetStateAction } from "react";
 import { useFrame, useLoader, useThree } from "@react-three/fiber";
 import * as THREE from "three";
@@ -107,6 +107,10 @@ export default function VisualizeBody({ bodyData, setFocus }: Props) {
     const meshRef = useRef<THREE.Mesh>(null);
     // You don't strictly need a ref for the light anymore unless you plan to animate color/intensity
     const lightRef = useRef<THREE.PointLight>(null!);
+
+    useEffect(() => {
+        bodyData.meshRef = meshRef;
+    }, [bodyData])
 
     useFrame((state, delta) => {
         if (!meshRef.current) return;
