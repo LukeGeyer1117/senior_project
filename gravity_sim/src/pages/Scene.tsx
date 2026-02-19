@@ -57,7 +57,7 @@ export default function Scene() {
     posX: 0, posY: 0, posZ: 0,
     velX: 0, velY: 0, velZ: 0,
     color: "#ffffff",
-    intensity: 1,
+    intensity: 5,
     texture: "2k_sun.jpg"
   });
 
@@ -78,7 +78,6 @@ export default function Scene() {
     );
 
     // Optional: Close the form and reset name for next time
-    setShowStarForm(false);
     setStarParams(prev => ({ ...prev, name: `Star-${Date.now()}` }));
   };
 
@@ -87,8 +86,8 @@ export default function Scene() {
     mass: 1,
     spin: 0.1,
     radius: 1.5,
-    posX: 0, posY: 0, posZ: 0,
-    velX: 0, velY: 0, velZ: 0,
+    posX: 150, posY: 0, posZ: 0,
+    velX: 0, velY: 0, velZ: 60,
     color: "#FFFFFF",
     texture: "2k_earth_daymap.jpg"
   })
@@ -106,7 +105,6 @@ export default function Scene() {
       planetParams.name,
     )
 
-    setShowPlanetForm(false);
     setPlanetParams(prev => ({ ...prev, name: `Planet-${Date.now()}` }));
   }
 
@@ -188,7 +186,7 @@ export default function Scene() {
         </div>
 
         <div className="w-full h-full">
-          <ul className="menu bg-info-content/70 w-fit h-full pointer-events-auto">
+          <ul className="menu bg-info-content/70 w-fit h-full overflow-y-scroll pointer-events-auto">
             <li>
               <details>
                 <summary>Objects</summary>
