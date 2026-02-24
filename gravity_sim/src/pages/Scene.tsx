@@ -301,8 +301,19 @@ export default function Scene() {
                           </button>
                         </li>
                         {bodies.map((body) => (
-                          body instanceof Star && (
-                            <li onClick={() => setFocusedRef(body.meshRef)} key={body.name}><a>{body.name}</a></li>
+                          body instanceof Planet && (
+                            <li 
+                              key={body.name}
+                              onClick={() => {
+                                // 1. Guard against 'undefined'
+                                if (body.meshRef) {
+                                  // 2. Safely cast the generic Object3D ref into the Mutable Mesh ref your state expects
+                                  setFocusedRef(body.meshRef as unknown as React.MutableRefObject<THREE.Mesh | null>);
+                                }
+                              }} 
+                            >
+                              <a>{body.name}</a>
+                            </li>
                           )
                         ))}
                       </ul>
@@ -425,7 +436,18 @@ export default function Scene() {
                         </li>
                         {bodies.map((body) => (
                           body instanceof Planet && (
-                            <li onClick={() => setFocusedRef(body.meshRef)} key={body.name}><a>{body.name}</a></li>
+                            <li 
+                              key={body.name}
+                              onClick={() => {
+                                // 1. Guard against 'undefined'
+                                if (body.meshRef) {
+                                  // 2. Safely cast the generic Object3D ref into the Mutable Mesh ref your state expects
+                                  setFocusedRef(body.meshRef as unknown as React.MutableRefObject<THREE.Mesh | null>);
+                                }
+                              }} 
+                            >
+                              <a>{body.name}</a>
+                            </li>
                           )
                         ))}
                       </ul>

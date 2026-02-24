@@ -20,7 +20,7 @@ export class Star extends CelestialBody {
     ) {
         super(mass, position, velocity, radius, spin, color, texture, name);
 
-        this.luminosity = luminosity,
+        this.luminosity = luminosity;   
         this.lightColor = color;
         this.lightIntensity = lightIntensity;
     }
@@ -39,5 +39,5 @@ export function useStar() {
         texture: "2k_sun.jpg"
     })
 
-    return [starParams, setStarParams];
+    return [starParams, setStarParams] as const;
 }

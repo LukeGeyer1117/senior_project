@@ -28,5 +28,5 @@ export function usePlanet() {
         texture: "2k_earth_daymap.jpg"
     })
 
-    return [planetParams, setPlanetParams];
+    return [planetParams, setPlanetParams] as const;
 }
