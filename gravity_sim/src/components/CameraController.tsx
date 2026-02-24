@@ -1,15 +1,19 @@
-import { useRef, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { CelestialBody } from "../physics/CelestialBody";
-import VisualizeBody from "./VisualizeBody";
+import React from "react";
 
-export const CameraController = ({ focusedRef, controlsRef }) => {
-    useFrame((state, delta) => {
-        // Only run if we have a foused body and the controls are ready
+// 1. Define an interface for your props to keep TS happy
+interface CameraControllerProps {
+    focusedRef: React.MutableRefObject<THREE.Object3D | null> | null;
+    controlsRef: React.MutableRefObject<any> | null; // 'any' used here for OrbitControls 
+}
+
+const targetPos = new THREE.Vector3(); // 2. Move this outside to avoid GC pressure every frame
+
+export const CameraController: React.FC<CameraControllerProps> = ({ focusedRef, controlsRef }) => {
+    // 3. Removed (state, delta) since they weren't being used
+    useFrame(() => {
         if (focusedRef?.current && controlsRef?.current) {
-            const targetPos = new THREE.Vector3();
             // Get the world position of the Celestial Body
             focusedRef.current.getWorldPosition(targetPos);
 
@@ -18,5 +22,6 @@ export const CameraController = ({ focusedRef, controlsRef }) => {
             controlsRef.current.update();
         }
     });
+
     return null;
-}
+};

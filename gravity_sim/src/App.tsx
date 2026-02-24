@@ -1,6 +1,5 @@
-import { useState } from 'react'
 import './App.css'
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import About from './pages/About';
 import Scene from './pages/Scene';
 import GridTest from './pages/GridTest';

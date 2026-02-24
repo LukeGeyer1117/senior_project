@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import type { MutableRefObject } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls } from '@react-three/drei';
@@ -23,7 +23,7 @@ interface PhysicsTickProps {
 }
 
 function PhysicsTick({ bodies }: PhysicsTickProps) {
-  useFrame((state, delta) => {
+  useFrame((_, delta) => {
     // Collide(bodies, delta);
     CalculateGravity(bodies, delta);
     bodies.forEach(body => body.updatePosition(delta));
@@ -301,7 +301,7 @@ export default function Scene() {
                           </button>
                         </li>
                         {bodies.map((body) => (
-                          body instanceof Planet && (
+                          body instanceof Star && (
                             <li 
                               key={body.name}
                               onClick={() => {
