@@ -1,96 +1,136 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useMemo } from 'react';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 import { CelestialBody } from '../physics/CelestialBody';
 import { GRAVITY_CONSTANT } from './CalculateGravity';
 
-// 1. Add an interface for props to bring in 'bodies'
+// Define the maximum number of bodies the shader can loop through.
+// WebGL requires a hardcoded constant integer for loop bounds.
+const MAX_BODIES = 50;
+
+const vertexShader = `
+  uniform vec4 uBodies[${MAX_BODIES}];
+  uniform int uBodyCount;
+  uniform float uGravityConstant;
+
+  void main() {
+    // Local vertex position (PlaneGeometry starts on the XY plane locally)
+    vec3 pos = position;
+    
+    // Calculate true world position to measure distance to bodies
+    vec4 worldPos = modelMatrix * vec4(position, 1.0);
+
+    float totalInfluence = 0.0;
+    
+    // WebGL requires loops to have a constant maximum size
+    for(int i = 0; i < ${MAX_BODIES}; i++) {
+      if (i >= uBodyCount) break;
+      
+      vec3 bPos = uBodies[i].xyz;
+      float bMass = uBodies[i].w;
+
+      // Distance on the XZ plane in World space
+      float dx = worldPos.x - bPos.x;
+      float dz = worldPos.z - bPos.z;
+      float dist = sqrt(dx * dx + dz * dz);
+      
+      // Optimization: ignore very far objects
+      if (dist < 10000.0) {
+        totalInfluence += (uGravityConstant * bMass) / (dist + 1.0);
+      }
+    }
+
+    // Apply deformation to local Z (maps to World Y because the mesh is rotated -90deg on X)
+    pos.z -= totalInfluence;
+
+    // Output final position
+    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(pos, 1.0);
+  }
+`;
+
+const fragmentShader = `
+  uniform vec3 uColor;
+  
+  void main() {
+    gl_FragColor = vec4(uColor, 1.0);
+    
+    // Basic Three.js color space conversion
+    #include <tonemapping_fragment>
+    #include <colorspace_fragment>
+  }
+`;
+
 interface GridProps {
   bodies: CelestialBody[];
 }
 
 export const Grid: React.FC<GridProps> = ({ bodies }) => {
-    const meshRef = useRef<THREE.Mesh>(null);
     const [segments, setSegments] = useState(40);
-    const [size, setSize] = useState(10000);
+    const [size, setSize] = useState(200);
 
-    // Grid Configuration
+    // 1. Create standard Three.js uniforms explicitly.
+    // useMemo ensures these references persist across re-renders.
+    const uniforms = useMemo(() => ({
+        uBodies: { value: Array.from({ length: MAX_BODIES }, () => new THREE.Vector4()) },
+        uBodyCount: { value: 0 },
+        uGravityConstant: { value: GRAVITY_CONSTANT },
+        uColor: { value: new THREE.Color('#97aabb') }
+    }), []);
+
+    // 2. Handle standard DOM inputs for Grid controls
     useEffect(() => {
         const density_range = document.querySelector<HTMLInputElement>('#grid-density-range');
-        if (!density_range) return;
-
         const size_range = document.querySelector<HTMLInputElement>('#grid-size-range');
-        if (!size_range) return;
+
+        if (!density_range || !size_range) return;
 
         const size_handler = () => setSize(Number(size_range.value));
-
         const density_handler = () => setSegments(Number(density_range.value));
 
         density_range.addEventListener('input', density_handler);
         size_range.addEventListener('input', size_handler);
+        
         return () => {
             density_range.removeEventListener('input', density_handler);
             size_range.removeEventListener('input', size_handler);
         };
+    }, []);
 
-    }, [])
-
+    // 3. Mutate the inner values of the uniforms directly on the animation loop
     useFrame(() => {
-        // Get the number of segements that the grid needs
+        const count = Math.min(bodies.length, MAX_BODIES);
 
-        if (!meshRef.current) return;
-
-        const geometry = meshRef.current.geometry;
-        const positions = geometry.attributes.position;
-
-        // 2. We loop through vertices directly inside useFrame
-        for (let i = 0; i < positions.count; i++) {
-            // Get local vertex positions
-            // Note: PlaneGeometry is created on XY. 
-            // Since you rotate it -90 on X, Local Y = World Z.
-            const localX = positions.getX(i); 
-            const localY = positions.getY(i); 
-
-            let totalInfluence = 0;
-
-            for (let j = 0; j < bodies.length; j++) {
-                const body = bodies[j];
-                const [bx, by, bz] = body.position; // Assuming [x, y, z]
-
-                // Calculate distance on the XZ plane (Local X vs World X, Local Y vs World Z)
-                const dx = localX - bx;
-                const dz = -localY - bz; 
-                
-                // We add a small epsilon (0.1) to distance to prevent division by zero
-                const distance = Math.sqrt(dx * dx + dz * dz);
-                
-                // Calculate gravity drop
-                if (distance < 10000) { // Optimization: Ignore very far objects
-                     totalInfluence += (GRAVITY_CONSTANT * body.mass) / (distance + 1); 
-                }
-            }
-
-            // 3. Set Z (which is World Y/Height due to rotation)
-            // IMPORTANT: Set absolute value (0 - influence), not relative (current - influence)
-            positions.setZ(i, 0 - totalInfluence);
+        for (let i = 0; i < count; i++) {
+            const body = bodies[i];
+            // Pack the X, Y, Z position and Mass (W) into the Vector4
+            uniforms.uBodies.value[i].set(
+                body.position.x, 
+                body.position.y, 
+                body.position.z, 
+                body.mass
+            );
         }
 
-        positions.needsUpdate = true;
-        
-        // Optional: Recompute normals if you want lighting to react to the curves
-        // geometry.computeVertexNormals(); 
+        // Update the active count so the shader loop knows when to break early
+        uniforms.uBodyCount.value = count;
     });
 
     return (
-        <mesh ref={meshRef} rotation={[-Math.PI / 2, 0, 0]}>
+        <mesh rotation={[-Math.PI / 2, 0, 0]}>
             <planeGeometry 
-            key={segments} 
-            args={[size, size, segments, segments]} />
-
-            <meshBasicMaterial 
-            color="#97aabb" 
-            wireframe={true} 
-            side={THREE.DoubleSide} />
+                key={segments} 
+                args={[size, size, segments, segments]} 
+            />
+            
+            {/* 4. Use standard shaderMaterial (lowercase = built-in R3F standard, not drei) */}
+            <shaderMaterial 
+                vertexShader={vertexShader}
+                fragmentShader={fragmentShader}
+                uniforms={uniforms}
+                wireframe={true} 
+                side={THREE.DoubleSide} 
+                transparent={true}
+            />
         </mesh>
     );
 };

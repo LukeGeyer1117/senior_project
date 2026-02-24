@@ -150,13 +150,13 @@ export default function Scene() {
               <li>
                 <fieldset className="fieldset">
                   <legend className="fieldset-legend">Grid Size</legend>
-                  <input id="grid-size-range" type="range" min={500} max={100000} defaultValue={200} className="range range-sm range-info" />
+                  <input id="grid-size-range" type="range" min={200} max={5000} defaultValue={200} className="range range-sm range-info" />
                 </fieldset>
               </li>
               <li>
                 <fieldset className="fieldset">
                   <legend className="fieldset-legend">Grid Density</legend>
-                  <input id="grid-density-range" type="range" min="20" max="300" defaultValue="40" className="range range-sm range-info" />
+                  <input id="grid-density-range" type="range" min={40} max={300} defaultValue={40} className="range range-sm range-info" />
                 </fieldset>
               </li>
               <li>
