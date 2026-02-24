@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import type { MutableRefObject, Dispatch, SetStateAction } from "react";
 import { useFrame, useLoader, useThree } from "@react-three/fiber";
 import * as THREE from "three";
@@ -109,10 +109,11 @@ export default function VisualizeBody({ bodyData, setFocus }: Props) {
     const lightRef = useRef<THREE.PointLight>(null!);
 
     useEffect(() => {
-        bodyData.meshRef = meshRef;
-    }, [bodyData])
+        // Safely cast the Mesh ref to the Object3D ref expected by the class
+        bodyData.meshRef = meshRef as unknown as React.RefObject<THREE.Object3D>;
+    }, [bodyData]);
 
-    useFrame((state, delta) => {
+    useFrame((_, delta) => {
         if (!meshRef.current) return;
 
         // Move the MESH. The child light will ride along automatically.
