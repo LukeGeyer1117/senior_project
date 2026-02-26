@@ -116,7 +116,7 @@ export default function Scene() {
         </div>
 
         <div className="w-full h-full flex flex-row justify-between">
-          <BodiesWindow bodies={bodies} setBodies={setBodies} />
+          <BodiesWindow bodies={bodies} setBodies={setBodies} focusedRef={focusedRef} setFocusedRef={setFocusedRef} />
         </div>
       </div>
     </div>

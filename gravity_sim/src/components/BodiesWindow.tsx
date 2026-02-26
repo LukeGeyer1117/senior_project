@@ -8,12 +8,16 @@ import { Planet, usePlanet } from "../physics/Planet";
 interface BodiesWindowProps {
   bodies: CelestialBody[];
   setBodies: Dispatch<SetStateAction<CelestialBody[]>>;
+  // focused mesh ref state
+  focusedRef: RefObject<THREE.Mesh | null> | null;
+  setFocusedRef: Dispatch<
+    SetStateAction<RefObject<THREE.Mesh | null> | null>
+  >;
 }
 
-const BodiesWindow = ({bodies, setBodies}: BodiesWindowProps) => {
+const BodiesWindow = ({bodies, setBodies, focusedRef, setFocusedRef}: BodiesWindowProps) => {
   const [showStarForm, setShowStarForm] = useState(false);
   const [showPlanetForm, setShowPlanetForm] = useState(false);
-  const [_, setFocusedRef] = useState<RefObject<THREE.Mesh | null> | null>(null);
 
   const addStar = (mass: number, position: [number, number, number], velocity: [number, number, number], radius: number, spin: number, color: string, texture: string, name: string, luminosity: number, lightIntensity: number) => {
     const newStar = new Star(mass, position, velocity, radius, spin, color, texture, name, luminosity, lightIntensity);

@@ -116,7 +116,7 @@ export const Grid: React.FC<GridProps> = ({ bodies }) => {
     });
 
     return (
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -500, 0]}>
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
             <planeGeometry 
                 key={segments} 
                 args={[size, size, segments, segments]} 
