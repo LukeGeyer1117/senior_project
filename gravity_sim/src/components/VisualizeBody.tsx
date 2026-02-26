@@ -149,7 +149,7 @@ export default function VisualizeBody({ bodyData, setFocus }: Props) {
                         ref={lightRef}
                         color={bodyData.lightColor}
                         intensity={bodyData.lightIntensity}
-                        distance={1000} 
+                        distance={100000} 
                         decay={0} // See note below regarding physics-based lights
                         castShadow
                         shadow-mapSize-width={1024}

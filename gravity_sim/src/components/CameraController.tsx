@@ -1,6 +1,9 @@
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import React from "react";
+import React, {useState} from "react";
+import type { RefObject } from "react";
+
+const [focusedRef, setFocusedRef] = useState<RefObject<THREE.Mesh | null> | null>(null);
 
 // 1. Define an interface for your props to keep TS happy
 interface CameraControllerProps {
@@ -25,3 +28,5 @@ export const CameraController: React.FC<CameraControllerProps> = ({ focusedRef, 
 
     return null;
 };
+
+export default [focusedRef, setFocusedRef];
