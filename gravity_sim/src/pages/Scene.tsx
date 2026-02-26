@@ -304,6 +304,7 @@ export default function Scene() {
                           body instanceof Star && (
                             <li 
                               key={body.name}
+                              className="w-full flex flex-row justify-between items-center"
                               onClick={() => {
                                 // 1. Guard against 'undefined'
                                 if (body.meshRef) {
@@ -313,6 +314,15 @@ export default function Scene() {
                               }} 
                             >
                               <a>{body.name}</a>
+                              <a 
+                              className="text-lg text-error"
+                              onClick={() => {
+                                const newBodies = bodies.filter(bod => bod != body);
+                                setBodies(newBodies);
+                              }}
+                              >
+                                &times;
+                              </a>
                             </li>
                           )
                         ))}
@@ -438,6 +448,7 @@ export default function Scene() {
                           body instanceof Planet && (
                             <li 
                               key={body.name}
+                              className="w-full flex flex-row justify-between items-center"
                               onClick={() => {
                                 // 1. Guard against 'undefined'
                                 if (body.meshRef) {
@@ -447,6 +458,15 @@ export default function Scene() {
                               }} 
                             >
                               <a>{body.name}</a>
+                              <a 
+                              className="text-lg text-error"
+                              onClick={() => {
+                                const newBodies = bodies.filter(bod => bod != body);
+                                setBodies(newBodies);
+                              }}
+                              >
+                                &times;
+                              </a>
                             </li>
                           )
                         ))}
