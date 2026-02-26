@@ -15,7 +15,7 @@ interface BodiesWindowProps {
   >;
 }
 
-const BodiesWindow = ({bodies, setBodies, focusedRef, setFocusedRef}: BodiesWindowProps) => {
+const BodiesWindow = ({bodies, setBodies, setFocusedRef}: BodiesWindowProps) => {
   const [showStarForm, setShowStarForm] = useState(false);
   const [showPlanetForm, setShowPlanetForm] = useState(false);
 
