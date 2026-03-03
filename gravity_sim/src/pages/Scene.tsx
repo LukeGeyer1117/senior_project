@@ -12,6 +12,7 @@ import { Grid } from "../components/VisualizeGrid";
 import { Skybox } from "../components/Skybox";
 import AmbientMusic from "../components/AmbientMusic";
 import BodiesWindow from "../components/BodiesWindow";
+import GridControls from "../components/GridControls";
 
 
 // --- Types ---
@@ -89,32 +90,15 @@ export default function Scene() {
       <div className="absolute inset-0 pointer-events-none flex flex-col justify-between">
         <div className="pointer-events-auto bg-info-content/80 text-white p-4 backdrop-blur-sm flex justify-between items-center w-full h-[10vh]">
           <h1 className="text-3xl text-white font-mono">Space<span className="text-info">Box</span></h1>
+
+          {/* Contains the music player for scene ambience */}
           <AmbientMusic />
-          <div className="dropdown dropdown-end">
-            <div tabIndex={0} role="button" className="btn m-1 bg-transparent border-none">Grid Controls</div>
-            <ul tabIndex={-1} className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-              <li>
-                <fieldset className="fieldset">
-                  <legend className="fieldset-legend">Grid Size</legend>
-                  <input id="grid-size-range" type="range" min={200} max={100000} defaultValue={200} className="range range-sm range-info" />
-                </fieldset>
-              </li>
-              <li>
-                <fieldset className="fieldset">
-                  <legend className="fieldset-legend">Grid Density</legend>
-                  <input id="grid-density-range" type="range" min={40} max={300} defaultValue={40} className="range range-sm range-info" />
-                </fieldset>
-              </li>
-              <li>
-                <fieldset className="fieldset">
-                  <legend className="fieldset-legend">Grid On/Off</legend>
-                  <input type="checkbox" className="toggle toggle-sm toggle-info" checked={showGrid} onChange={(e) => setShowGrid(e.target.checked)} />
-                </fieldset>
-              </li>
-            </ul>
-          </div>
+          {/* Grid Controls */}
+          <GridControls showGrid={showGrid} setShowGrid={setShowGrid} />
+
         </div>
 
+        {/* The forms, lists, and buttons that allow adding planets and stars */}
         <div className="w-full h-full flex flex-row justify-between">
           <BodiesWindow bodies={bodies} setBodies={setBodies} focusedRef={focusedRef} setFocusedRef={setFocusedRef} />
         </div>
