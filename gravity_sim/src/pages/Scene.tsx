@@ -13,15 +13,18 @@ import { Skybox } from "../components/Skybox";
 import AmbientMusic from "../components/AmbientMusic";
 import BodiesWindow from "../components/BodiesWindow";
 import GridControls from "../components/GridControls";
+import PlaybackControls from "../components/PlaybackControls";
 
 
 // --- Types ---
 interface PhysicsTickProps {
   bodies: CelestialBody[];
+  playing: boolean;
 }
 
-function PhysicsTick({ bodies }: PhysicsTickProps) {
+function PhysicsTick({ bodies, playing }: PhysicsTickProps) {
   useFrame((_, delta) => {
+    if (!playing) return;
     // Collide(bodies, delta);
     CalculateGravity(bodies, delta);
     bodies.forEach(body => body.updatePosition(delta));
@@ -37,6 +40,9 @@ export default function Scene() {
 
   // Track whether or not to show the grid
   const [showGrid, setShowGrid] = useState(true);
+
+  // Track if the simulation is playing
+  const [playing, setPlaying] = useState(true);
 
   // --- NEW: Handle Manual Panning ---
   // If user Right Clicks (Button 2), they want to Pan. We must unlock the camera.
@@ -83,11 +89,12 @@ export default function Scene() {
 
         {showGrid && <Grid bodies={bodies} />}
 
-        <PhysicsTick bodies={bodies} />
+        <PhysicsTick bodies={bodies} playing={playing} />
       </Canvas>
 
       {/* UI Overlay */}
       <div className="absolute inset-0 pointer-events-none flex flex-col justify-between">
+        {/* Top Bar */}
         <div className="pointer-events-auto bg-info-content/80 text-white p-4 backdrop-blur-sm flex justify-between items-center w-full h-[10vh]">
           <h1 className="text-3xl text-white font-mono">Space<span className="text-info">Box</span></h1>
 
@@ -95,12 +102,16 @@ export default function Scene() {
           <AmbientMusic />
           {/* Grid Controls */}
           <GridControls showGrid={showGrid} setShowGrid={setShowGrid} />
-
         </div>
 
         {/* The forms, lists, and buttons that allow adding planets and stars */}
-        <div className="w-full h-full flex flex-row justify-between">
+        <div className="w-full h-full flex flex-row justify-between items-end">
           <BodiesWindow bodies={bodies} setBodies={setBodies} focusedRef={focusedRef} setFocusedRef={setFocusedRef} />
+
+          {/* The botom bar */}
+          <div className="flex flex-row w-fit h-fit bg-info-content/80 pointer-events-auto">
+            <PlaybackControls playing={playing} setPlaying={setPlaying} />
+          </div>
         </div>
       </div>
     </div>
