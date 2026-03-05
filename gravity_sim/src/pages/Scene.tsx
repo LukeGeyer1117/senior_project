@@ -14,6 +14,7 @@ import AmbientMusic from "../components/AmbientMusic";
 import BodiesWindow from "../components/BodiesWindow";
 import GridControls from "../components/GridControls";
 import PlaybackControls from "../components/PlaybackControls";
+import FocusRing from "../components/FocusRing";
 
 
 // --- Types ---
@@ -34,17 +35,11 @@ function PhysicsTick({ bodies, playing }: PhysicsTickProps) {
 
 export default function Scene() {
   const [bodies, setBodies] = useState<CelestialBody[]>(() => []);
-
   const [focusedRef, setFocusedRef] = useState<MutableRefObject<THREE.Mesh | null> | null>(null);
   const controlsRef = useRef<OrbitControlsImpl>(null);
-
-  // Track whether or not to show the grid
   const [showGrid, setShowGrid] = useState(true);
-
-  // Track if the simulation is playing
   const [playing, setPlaying] = useState(true);
 
-  // --- NEW: Handle Manual Panning ---
   // If user Right Clicks (Button 2), they want to Pan. We must unlock the camera.
   const handleCanvasClick = (e: React.PointerEvent) => {
     // Button 2 is Right Click. Buttons 4/middle are often used for pan too.
@@ -52,6 +47,11 @@ export default function Scene() {
       setFocusedRef(null);
     }
   };
+
+  const focusedBody =
+    focusedRef?.current
+      ? bodies.find(b => b.meshRef?.current === focusedRef.current) || null
+      : null;
 
   return (
     // Added onPointerDown to the container to catch interactions before they hit the canvas logic
@@ -67,17 +67,17 @@ export default function Scene() {
       >
         <OrbitControls
           ref={controlsRef}
-          enablePan={true} // Ensure this is true
+          enablePan={true}
           enableZoom={true}
-          // Lower damping makes panning feel snappier
           dampingFactor={0.1}
         />
-
         <ambientLight intensity={0.1} />
         <axesHelper args={[100]} />
         <CameraController focusedRef={focusedRef} controlsRef={controlsRef} />
-
         <Skybox />
+        <FocusRing
+          body={focusedBody}
+        />
 
         {bodies.map((body, index) => (
           <VisualizeBody
