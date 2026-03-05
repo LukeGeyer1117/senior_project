@@ -21,14 +21,18 @@ import FocusRing from "../components/FocusRing";
 interface PhysicsTickProps {
   bodies: CelestialBody[];
   playing: boolean;
+  speed: number;
 }
 
-function PhysicsTick({ bodies, playing }: PhysicsTickProps) {
+function PhysicsTick({ bodies, playing, speed }: PhysicsTickProps) {
   useFrame((_, delta) => {
     if (!playing) return;
+
+    const scaledDelta = delta * speed;
+
     // Collide(bodies, delta);
-    CalculateGravity(bodies, delta);
-    bodies.forEach(body => body.updatePosition(delta));
+    CalculateGravity(bodies, scaledDelta);
+    bodies.forEach(body => body.updatePosition(scaledDelta));
   });
   return null;
 }
@@ -39,6 +43,7 @@ export default function Scene() {
   const controlsRef = useRef<OrbitControlsImpl>(null);
   const [showGrid, setShowGrid] = useState(true);
   const [playing, setPlaying] = useState(true);
+  const [speed, setSpeed] = useState(1);
 
   // If user Right Clicks (Button 2), they want to Pan. We must unlock the camera.
   const handleCanvasClick = (e: React.PointerEvent) => {
@@ -89,7 +94,7 @@ export default function Scene() {
 
         {showGrid && <Grid bodies={bodies} />}
 
-        <PhysicsTick bodies={bodies} playing={playing} />
+        <PhysicsTick bodies={bodies} playing={playing} speed={speed} />
       </Canvas>
 
       {/* UI Overlay */}
@@ -97,9 +102,6 @@ export default function Scene() {
         {/* Top Bar */}
         <div className="pointer-events-auto bg-info-content/80 text-white p-4 backdrop-blur-sm flex justify-between items-center w-full h-[10vh]">
           <h1 className="text-3xl text-white font-mono">Space<span className="text-info">Box</span></h1>
-
-          {/* Contains the music player for scene ambience */}
-          <AmbientMusic />
           {/* Grid Controls */}
           <GridControls showGrid={showGrid} setShowGrid={setShowGrid} />
         </div>
@@ -109,8 +111,9 @@ export default function Scene() {
           <BodiesWindow bodies={bodies} setBodies={setBodies} focusedRef={focusedRef} setFocusedRef={setFocusedRef} />
 
           {/* The botom bar */}
-          <div className="flex flex-row w-fit h-fit bg-info-content/80 pointer-events-auto">
-            <PlaybackControls playing={playing} setPlaying={setPlaying} />
+          <div className="flex flex-row justify-center items-center w-full h-fit bg-info-content/80 pointer-events-auto">
+            <PlaybackControls playing={playing} setPlaying={setPlaying} speed={speed} setSpeed={setSpeed} />
+            <AmbientMusic />
           </div>
         </div>
       </div>
