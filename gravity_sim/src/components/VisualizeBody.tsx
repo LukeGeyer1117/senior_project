@@ -6,6 +6,47 @@ import { CelestialBody } from "../physics/CelestialBody";
 import { Star } from "../physics/Star";
 import { OrbitControls } from 'three-stdlib';
 
+const PixelateShader = {
+  uniforms: {
+    map: { value: null },
+    pixelSize: { value: 32 }, // Adjust how blocky it is
+  },
+  vertexShader: `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+    }
+  `,
+  fragmentShader: `
+    uniform sampler2D map;
+    uniform float pixelSize;
+    varying vec2 vUv;
+
+    void main() {
+      vec2 uv = vUv;
+      uv = floor(uv * pixelSize) / pixelSize;
+      gl_FragColor = texture2D(map, uv);
+    }
+  `
+};
+
+const MaterialPixelated = ({ bodyData, texturePath }: { bodyData: CelestialBody, texturePath: string }) => {
+  const texture = useLoader(THREE.TextureLoader, texturePath);
+
+  return (
+    <shaderMaterial
+      attach="material"
+      uniforms={{
+        map: { value: texture },
+        pixelSize: { value: 16 } // tweak this
+      }}
+      vertexShader={PixelateShader.vertexShader}
+      fragmentShader={PixelateShader.fragmentShader}
+    />
+  );
+};
+
 // We need 2 Sub-Components. One for bodies with a texture, and one for bodies without.
 // --- SUB-COMPONENT 1: For bodies WITH a texture ---
 const MaterialWithTexture = ({ bodyData, texturePath }: { bodyData: CelestialBody, texturePath: string }) => {

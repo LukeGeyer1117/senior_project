@@ -16,7 +16,7 @@ const GridControls = ({showGrid, setShowGrid}: GridControlProps) => {
               <li>
                 <fieldset className="fieldset">
                   <legend className="fieldset-legend">Grid Size</legend>
-                  <input id="grid-size-range" type="range" min={200} max={100000} defaultValue={200} className="range range-sm range-info" />
+                  <input id="grid-size-range" type="range" min={200} max={10000} defaultValue={200} className="range range-sm range-info" />
                 </fieldset>
               </li>
               <li>
