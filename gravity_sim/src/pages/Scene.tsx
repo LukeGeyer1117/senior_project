@@ -1,21 +1,26 @@
+// REACT & THREE.JS IMPORTS
 import React, { useState, useRef } from "react";
 import type { MutableRefObject } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls } from '@react-three/drei';
-import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import * as THREE from "three";
+import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
+import { useSearchParams } from "react-router-dom";
+
+// SIMULATOR IMPORTS
+import CalculateGravity from "../components/CalculateGravity";
+import FocusRing from "../components/FocusRing";
 import { CelestialBody } from "../physics/CelestialBody";
 import VisualizeBody, { CameraController } from "../components/VisualizeBody";
-import CalculateGravity from "../components/CalculateGravity";
-// import Collide from "../components/Collision";
 import { Grid } from "../components/VisualizeGrid";
 import { Skybox } from "../components/Skybox";
+
+// COMPONENT IMPORTS
 import AmbientMusic from "../components/AmbientMusic";
 import BodiesWindow from "../components/BodiesWindow";
 import GridControls from "../components/GridControls";
 import PlaybackControls from "../components/PlaybackControls";
-import FocusRing from "../components/FocusRing";
-
+import type { Preset } from "./Home";
 
 // --- Types ---
 interface PhysicsTickProps {
@@ -38,12 +43,16 @@ function PhysicsTick({ bodies, playing, speed }: PhysicsTickProps) {
 }
 
 export default function Scene() {
+  const [searchParams] = useSearchParams();
   const [bodies, setBodies] = useState<CelestialBody[]>(() => []);
   const [focusedRef, setFocusedRef] = useState<MutableRefObject<THREE.Mesh | null> | null>(null);
   const controlsRef = useRef<OrbitControlsImpl>(null);
   const [showGrid, setShowGrid] = useState(true);
   const [playing, setPlaying] = useState(true);
   const [speed, setSpeed] = useState(1);
+
+  // The preset/setpreset consts
+  const [presetBodies, setPresetBodies] = useState<Preset[]>([]);
 
   // If user Right Clicks (Button 2), they want to Pan. We must unlock the camera.
   const handleCanvasClick = (e: React.PointerEvent) => {

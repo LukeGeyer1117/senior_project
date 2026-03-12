@@ -19,7 +19,6 @@ CREATE TABLE IF NOT EXISTS "planet" (
     "preset_id" INTEGER NOT NULL,
 
     -- Body required initial properties
-    "type" TEXT NOT NULL, 
     "mass" REAL NOT NULL,
     "position_x" REAL NOT NULL,
     "position_y" REAL NOT NULL,
@@ -44,7 +43,6 @@ CREATE TABLE IF NOT EXISTS "star" (
     "preset_id" INTEGER NOT NULL,
 
     -- Body required initial properties
-    "type" TEXT NOT NULL, 
     "mass" REAL NOT NULL,
     "position_x" REAL NOT NULL,
     "position_y" REAL NOT NULL,
