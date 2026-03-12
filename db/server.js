@@ -18,10 +18,12 @@ const db = new sqlite3.Database('./database.sqlite', (err) => {
 // Import routers
 const presetsRouter = require('./routes/presets')(db);
 const planetsRouter = require('./routes/planets')(db);
+const starsRouter = require('./routes/stars')(db);
 
 // Mount routers
 app.use("/api/presets", presetsRouter);
 app.use("/api/presets", planetsRouter);
+app.use("/api/presets", starsRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
