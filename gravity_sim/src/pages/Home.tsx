@@ -97,7 +97,7 @@ function Home() {
         Welcome to SpaceBox
       </div>
 
-      <div className="w-full flex flex-row flex-wrap gap-4">
+      <div className="w-full grid grid-cols-1 grid-rows-auto md:grid-cols-2 lg:grid-cols-4 gap-4">
         {presets.map((preset) => (
           <PresetCard
             key={preset.id}
@@ -105,6 +105,15 @@ function Home() {
             onDetails={openDetails}
           />
         ))}
+      <div 
+        className="p-10 w-full border-4 border-dashed border-primary hover:bg-primary/20 rounded-md flex flex-col items-center"
+        onClick={()=>{(document.getElementById("new-preset-modal") as HTMLDialogElement | null)?.showModal()}}
+        >
+        <div className="flex flex-col items-center justify-center h-full w-full text-7xl text-primary hover:text-primary-content">
+          +
+        </div>
+      </div>
+
       </div>
 
       <Link
@@ -114,7 +123,10 @@ function Home() {
         Enter SpaceBox
       </Link>
 
-      <Details preset={selectedPreset} loading={loading} />
+      <PresetDetails preset={selectedPreset} loading={loading} />
+      <NewPresetModal />
+      <NewPlanetModal presetId={selectedPreset?.preset_id ?? -1} />
+      <NewStarModal presetId={selectedPreset?.preset_id ?? -1} />
     </div>
   );
 }
@@ -128,7 +140,7 @@ type PresetCardProps = {
 
 const PresetCard = ({ preset, onDetails }: PresetCardProps) => {
   return (
-    <div className="p-10 w-1/2 md:w-1/3 lg:w-1/4 bg-primary hover:bg-primary/80 rounded-md flex flex-col items-center">
+    <div className="p-10 w-full bg-neutral hover:bg-neutral/60 rounded-md flex flex-col gap-2 items-center">
       <Link to={`/scene?preset=${preset.id}`}>
         <div className="flex flex-col items-center">
           <h2 className="text-3xl font-extrabold text-primary-content">
@@ -143,24 +155,42 @@ const PresetCard = ({ preset, onDetails }: PresetCardProps) => {
         </div>
       </Link>
 
-      <button
-        className="btn btn-link text-primary-content"
-        onClick={() => onDetails(preset.id)}
-      >
-        details
-      </button>
+      <div className="flex flex-row gap-2">
+        <button
+          className="btn btn-info text-info-content text-lg"
+          onClick={() => onDetails(preset.id)}
+        >
+          details
+        </button>
+        <button 
+          className="btn btn-error text-error-content text-lg"
+          onClick={async () => {
+            const confirmed = window.confirm("Are you sure you want to delete this preset? This action cannot be undone.");
+            if (!confirmed) return;
+
+            const success = await deletePreset(preset.id);
+            if (success) {
+              window.location.reload();
+            } else {
+              window.alert("Failed to delete preset. Please try again.");
+            }
+          }}
+        >
+          remove
+        </button>
+      </div>
     </div>
   );
 };
 
 /* ================= MODAL ================= */
 
-type DetailsProps = {
+type PresetDetailsProps = {
   preset: FullPreset | null;
   loading: boolean;
 };
 
-const Details = ({ preset, loading }: DetailsProps) => {
+const PresetDetails = ({ preset, loading }: PresetDetailsProps) => {
   return (
     <dialog id="preset-details-modal" className="modal">
       <div className="modal-box max-w-3xl">
@@ -212,6 +242,7 @@ const Details = ({ preset, loading }: DetailsProps) => {
                   ))}
                 </div>
               )}
+              <button className="btn btn-info btn-link" onClick={() => {(document.getElementById("new-star-modal") as HTMLDialogElement)?.showModal()}}>Add Star</button>
             </div>
 
             {/* ===== PLANETS ===== */}
@@ -245,12 +276,407 @@ const Details = ({ preset, loading }: DetailsProps) => {
                   ))}
                 </div>
               )}
+              <button className="btn btn-info btn-link" onClick={() => {(document.getElementById("new-planet-modal") as HTMLDialogElement)?.showModal()}}>Add Planet</button>
             </div>
+
+
             <Link to={`/scene?preset=${preset.preset_id}`} className="btn btn-primary mt-6">
                 Load Simulation
             </Link>
           </>
         )}
+      </div>
+
+      <form method="dialog" className="modal-backdrop">
+        <button>close</button>
+      </form>
+    </dialog>
+  );
+};
+
+const NewPresetModal = () => {
+  return (
+      <dialog id="new-preset-modal" className="modal">
+        <div className="modal-box max-w-3xl flex flex-col items-center gap-4">
+          <h3 className="font-bold text-2xl mb-2">Create New Preset</h3>
+          <input id="preset-name-input" type="text" className="input input-lg" placeholder="Preset Name" />
+          <textarea id="preset-description-input" className="textarea textarea-lg" placeholder="Preset Description"></textarea>
+          <button className="btn btn-primary" onClick={async () => {
+            const nameInput = document.getElementById("preset-name-input") as HTMLInputElement | null;
+            const descInput = document.getElementById("preset-description-input") as HTMLTextAreaElement | null;
+
+            if (!nameInput || !descInput) return;
+
+            const name = nameInput.value.trim();
+            const description = descInput.value.trim();
+
+            if (!name) {
+              alert("Preset name is required.");
+              return;
+            }
+
+            try {
+              const res = await fetch(`${DB_URL}/api/presets`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, description })
+              });
+
+              if (!res.ok) {
+                const err = await res.json().catch(() => ({ message: "Unknown error" }));
+                alert(`Failed to create preset: ${err.message}`);
+              } else {
+                window.location.reload();
+              }
+            } catch (error) {
+              console.error("Network or fetch error:", error);
+              alert("An error occurred while creating the preset.");
+            }
+          }}>
+            Create Preset
+          </button>
+        </div>
+        <form method="dialog" className="modal-backdrop">
+          <button>close</button>
+        </form>
+      </dialog>
+  );
+}
+
+type NewPlanetModalProps = {
+  presetId: number;
+};
+
+const NewPlanetModal = ({ presetId }: NewPlanetModalProps) => {
+
+  const [form, setForm] = useState({
+    name: "",
+    mass: 1.5,
+    radius: 1.5,
+    spin: 0.2,
+    color: "#FFFFFF",
+    texture_path: "2k_earth_daymap.jpg",
+
+    position_x: 0,
+    position_y: 0,
+    position_z: 0,
+
+    velocity_x: 0,
+    velocity_y: 0,
+    velocity_z: 0,
+  });
+
+  const handleChange = (key: string, value: string | number) => {
+    setForm((prev) => ({
+      ...prev,
+      [key]: typeof prev[key as keyof typeof prev] === "number"
+        ? Number(value)
+        : value
+    }));
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const res = await fetch(
+        `${DB_URL}/api/presets/${presetId}/planets`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(form),
+        }
+      );
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        console.error("Failed to create planet:", err);
+        return;
+      }
+
+      console.log("Planet created!");
+
+      window.location.reload(); // Refresh to show new planet in details view
+
+    } catch (err) {
+      console.error("Error creating planet:", err);
+    }
+  };
+
+
+  return (
+    <dialog id="new-planet-modal" className="modal">
+      <div className="modal-box max-w-3xl flex flex-col gap-4">
+
+        <h3 className="font-bold text-lg text-center">Create New Planet</h3>
+
+        {/* ===== BASIC INFO ===== */}
+        <input
+          className="input input-bordered"
+          placeholder="Name"
+          value={form.name}
+          onChange={(e) => handleChange("name", e.target.value)}
+        />
+
+        <div className="grid grid-cols-2 gap-2">
+          <input
+            className="input input-bordered"
+            type="number"
+            placeholder="Mass"
+            value={form.mass}
+            onChange={(e) => handleChange("mass", e.target.value)}
+          />
+          <input
+            className="input input-bordered"
+            type="number"
+            placeholder="Radius"
+            value={form.radius}
+            onChange={(e) => handleChange("radius", e.target.value)}
+          />
+        </div>
+
+        <input
+          className="input input-bordered"
+          type="number"
+          placeholder="Spin"
+          value={form.spin}
+          onChange={(e) => handleChange("spin", e.target.value)}
+        />
+
+        <input
+          className="input input-bordered"
+          placeholder="Texture Path"
+          value={form.texture_path}
+          onChange={(e) => handleChange("texture_path", e.target.value)}
+        />
+
+        <input
+          className="input input-bordered"
+          type="color"
+          value={form.color}
+          onChange={(e) => handleChange("color", e.target.value)}
+        />
+
+        {/* ===== POSITION ===== */}
+        <div>
+          <div className="font-semibold">Position</div>
+          <div className="grid grid-cols-3 gap-2">
+            <input className="input input-bordered" type="number" placeholder="X"
+              value={form.position_x}
+              onChange={(e) => handleChange("position_x", e.target.value)} />
+            <input className="input input-bordered" type="number" placeholder="Y"
+              value={form.position_y}
+              onChange={(e) => handleChange("position_y", e.target.value)} />
+            <input className="input input-bordered" type="number" placeholder="Z"
+              value={form.position_z}
+              onChange={(e) => handleChange("position_z", e.target.value)} />
+          </div>
+        </div>
+
+        {/* ===== VELOCITY ===== */}
+        <div>
+          <div className="font-semibold">Velocity</div>
+          <div className="grid grid-cols-3 gap-2">
+            <input className="input input-bordered" type="number" placeholder="X"
+              value={form.velocity_x}
+              onChange={(e) => handleChange("velocity_x", e.target.value)} />
+            <input className="input input-bordered" type="number" placeholder="Y"
+              value={form.velocity_y}
+              onChange={(e) => handleChange("velocity_y", e.target.value)} />
+            <input className="input input-bordered" type="number" placeholder="Z"
+              value={form.velocity_z}
+              onChange={(e) => handleChange("velocity_z", e.target.value)} />
+          </div>
+        </div>
+
+        {/* ===== ACTIONS ===== */}
+        <div className="flex justify-end gap-2 mt-4">
+          <button
+            className="btn btn-primary"
+            onClick={handleSubmit}
+          >
+            Create
+          </button>
+        </div>
+
+      </div>
+
+      <form method="dialog" className="modal-backdrop">
+        <button>close</button>
+      </form>
+    </dialog>
+  );
+}
+
+type NewStarModalProps = {
+  presetId: number;
+  onCreated?: () => void;
+};
+
+const NewStarModal = ({ presetId, onCreated }: NewStarModalProps) => {
+  const [form, setForm] = useState({
+    name: "",
+    mass: 10,
+    radius: 10,
+    spin: 0.1,
+    color: "#ffffff",
+    texture_path: "2k_sun.jpg",
+
+    light_intensity: 10,
+
+    position_x: 0,
+    position_y: 0,
+    position_z: 0,
+
+    velocity_x: 0,
+    velocity_y: 0,
+    velocity_z: 0,
+  });
+
+  const handleChange = (key: string, value: string | number) => {
+    setForm((prev) => ({
+      ...prev,
+      [key]:
+        typeof prev[key as keyof typeof prev] === "number"
+          ? Number(value)
+          : value,
+    }));
+  };
+
+  const handleSubmit = async () => {
+    if (!presetId) {
+      console.error("Invalid preset ID");
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `${DB_URL}/api/presets/${presetId}/stars`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(form),
+        }
+      );
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        console.error("Failed to create star:", err);
+        return;
+      }
+
+      console.log("Star created!");
+
+      window.location.reload(); // Refresh to show new star in details view
+
+    } catch (err) {
+      console.error("Error creating star:", err);
+    }
+  };
+
+  return (
+    <dialog id="new-star-modal" className="modal">
+      <div className="modal-box max-w-3xl flex flex-col gap-4">
+
+        <h3 className="font-bold text-lg text-center">Create New Star</h3>
+
+        {/* ===== BASIC INFO ===== */}
+        <input
+          className="input input-bordered"
+          placeholder="Name"
+          value={form.name}
+          onChange={(e) => handleChange("name", e.target.value)}
+        />
+
+        <div className="grid grid-cols-2 gap-2">
+          <input
+            className="input input-bordered"
+            type="number"
+            placeholder="Mass"
+            value={form.mass}
+            onChange={(e) => handleChange("mass", e.target.value)}
+          />
+          <input
+            className="input input-bordered"
+            type="number"
+            placeholder="Radius"
+            value={form.radius}
+            onChange={(e) => handleChange("radius", e.target.value)}
+          />
+        </div>
+
+        <input
+          className="input input-bordered"
+          type="number"
+          placeholder="Spin"
+          value={form.spin}
+          onChange={(e) => handleChange("spin", e.target.value)}
+        />
+
+        <input
+          className="input input-bordered"
+          placeholder="Texture Path"
+          value={form.texture_path}
+          onChange={(e) => handleChange("texture_path", e.target.value)}
+        />
+
+        <input
+          className="input input-bordered"
+          type="color"
+          value={form.color}
+          onChange={(e) => handleChange("color", e.target.value)}
+        />
+
+        {/* ⭐ STAR-SPECIFIC */}
+        <input
+          className="input input-bordered"
+          type="number"
+          placeholder="Light Intensity"
+          value={form.light_intensity}
+          onChange={(e) => handleChange("light_intensity", e.target.value)}
+        />
+
+        {/* ===== POSITION ===== */}
+        <div>
+          <div className="font-semibold">Position</div>
+          <div className="grid grid-cols-3 gap-2">
+            <input className="input input-bordered" type="number" placeholder="X"
+              value={form.position_x}
+              onChange={(e) => handleChange("position_x", e.target.value)} />
+            <input className="input input-bordered" type="number" placeholder="Y"
+              value={form.position_y}
+              onChange={(e) => handleChange("position_y", e.target.value)} />
+            <input className="input input-bordered" type="number" placeholder="Z"
+              value={form.position_z}
+              onChange={(e) => handleChange("position_z", e.target.value)} />
+          </div>
+        </div>
+
+        {/* ===== VELOCITY ===== */}
+        <div>
+          <div className="font-semibold">Velocity</div>
+          <div className="grid grid-cols-3 gap-2">
+            <input className="input input-bordered" type="number" placeholder="X"
+              value={form.velocity_x}
+              onChange={(e) => handleChange("velocity_x", e.target.value)} />
+            <input className="input input-bordered" type="number" placeholder="Y"
+              value={form.velocity_y}
+              onChange={(e) => handleChange("velocity_y", e.target.value)} />
+            <input className="input input-bordered" type="number" placeholder="Z"
+              value={form.velocity_z}
+              onChange={(e) => handleChange("velocity_z", e.target.value)} />
+          </div>
+        </div>
+
+        {/* ACTIONS */}
+        <div className="flex justify-end gap-2 mt-4">
+          <button className="btn btn-primary" onClick={handleSubmit}>
+            Create Star
+          </button>
+        </div>
+
       </div>
 
       <form method="dialog" className="modal-backdrop">
@@ -298,6 +724,21 @@ async function removeStar(preset_id: number, star_id: number) {
     console.error("Network or fetch error:", error);
     return false;
   }
+}
+
+async function deletePreset(preset_id: number) {
+  const response = await fetch(`${DB_URL}/api/presets/${preset_id}`, {
+    method: "DELETE"
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({ message: "Unknown error" }));
+    console.error(`Couldn't delete preset:`, err);
+    return false;
+  }
+
+  console.log(`Preset ${preset_id} deleted successfully.`);
+  return true;
 }
 
 export default Home;
