@@ -1,5 +1,5 @@
 // REACT & THREE.JS IMPORTS
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import type { MutableRefObject } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls } from '@react-three/drei';
@@ -51,8 +51,26 @@ export default function Scene() {
   const [playing, setPlaying] = useState(true);
   const [speed, setSpeed] = useState(1);
 
-  // The preset/setpreset consts
-  const [presetBodies, setPresetBodies] = useState<Preset[]>([]);
+  const presetID = Number(searchParams.get("preset"));
+
+  useEffect(() => {
+    if (!presetID || presetID == -1) return;
+    
+    async function getPresetStars() {
+      const response = await fetch(`http://localhost:3001/api/presets/${presetID}/stars`, {
+        method: "GET"
+      })
+
+      if (!response.ok) {
+        console.error("Failed to fetch preset stars from the database.");
+        return;
+      }
+      
+      const data = await response.json();
+      return data;
+    }
+
+  })
 
   // If user Right Clicks (Button 2), they want to Pan. We must unlock the camera.
   const handleCanvasClick = (e: React.PointerEvent) => {
@@ -128,4 +146,18 @@ export default function Scene() {
       </div>
     </div>
   );
+}
+
+async function getPresetStars() {
+  const response = await fetch(`http://localhost:3001/api/presets/${presetID}/stars`, {
+    method: "GET"
+  })
+
+  if (!response.ok) {
+    console.error("Failed to fetch preset stars from the database.");
+    return;
+  }
+  
+  const data = await response.json();
+  return data;
 }
