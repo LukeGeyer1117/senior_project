@@ -24,6 +24,9 @@ const starsRouter = require('./routes/stars')(db);
 app.use("/api/presets", presetsRouter);
 app.use("/api/presets", planetsRouter);
 app.use("/api/presets", starsRouter);
+app.get("/", (req, res) => {
+  res.send("Server is alive");
+});
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

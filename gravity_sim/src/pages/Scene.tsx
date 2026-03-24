@@ -6,11 +6,14 @@ import { OrbitControls } from '@react-three/drei';
 import * as THREE from "three";
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 // SIMULATOR IMPORTS
 import CalculateGravity from "../components/CalculateGravity";
 import FocusRing from "../components/FocusRing";
 import { CelestialBody } from "../physics/CelestialBody";
+import { Planet } from "../physics/Planet";
+import { Star } from "../physics/Star";
 import VisualizeBody, { CameraController } from "../components/VisualizeBody";
 import { Grid } from "../components/VisualizeGrid";
 import { Skybox } from "../components/Skybox";
@@ -20,7 +23,9 @@ import AmbientMusic from "../components/AmbientMusic";
 import BodiesWindow from "../components/BodiesWindow";
 import GridControls from "../components/GridControls";
 import PlaybackControls from "../components/PlaybackControls";
-import type { Preset } from "./Home";
+
+const DEFAULT_PLANET_TEXTURE = "2k_earth_daymap.jpg";
+const DEFAULT_STAR_TEXTURE = "2k_sun.jpg";
 
 // --- Types ---
 interface PhysicsTickProps {
@@ -53,24 +58,20 @@ export default function Scene() {
 
   const presetID = Number(searchParams.get("preset"));
 
+  const [loadedPresetID, setLoadedPresetID] = useState<number | null>(null);
+
   useEffect(() => {
-    if (!presetID || presetID == -1) return;
-    
-    async function getPresetStars() {
-      const response = await fetch(`http://localhost:3001/api/presets/${presetID}/stars`, {
-        method: "GET"
-      })
+    if (!presetID || presetID === -1 || loadedPresetID === presetID) return;
 
-      if (!response.ok) {
-        console.error("Failed to fetch preset stars from the database.");
-        return;
-      }
-      
-      const data = await response.json();
-      return data;
-    }
+    const loadPreset = async () => {
+      const preset_info = await getPresetFull(presetID);
+      console.log(bodiesFromPreset(preset_info));
+      setBodies(bodiesFromPreset(preset_info));
+      setLoadedPresetID(presetID); // mark as loaded
+    };
 
-  })
+    loadPreset();
+  }, [presetID, loadedPresetID]);
 
   // If user Right Clicks (Button 2), they want to Pan. We must unlock the camera.
   const handleCanvasClick = (e: React.PointerEvent) => {
@@ -128,7 +129,7 @@ export default function Scene() {
       <div className="absolute inset-0 pointer-events-none flex flex-col justify-between">
         {/* Top Bar */}
         <div className="pointer-events-auto bg-info-content/80 text-white p-4 backdrop-blur-sm flex justify-between items-center w-full h-[10vh]">
-          <h1 className="text-3xl text-white font-mono">Space<span className="text-info">Box</span></h1>
+          <Link to={"/"} className="text-xl font-bold">Space<span className="text-info">Box</span></Link>
           {/* Grid Controls */}
           <GridControls showGrid={showGrid} setShowGrid={setShowGrid} />
         </div>
@@ -148,16 +149,66 @@ export default function Scene() {
   );
 }
 
-async function getPresetStars() {
-  const response = await fetch(`http://localhost:3001/api/presets/${presetID}/stars`, {
+async function getPresetFull(presetID: number) {
+  const response = await fetch(`http://localhost:3001/api/presets/${presetID}/full`, {
     method: "GET"
   })
 
   if (!response.ok) {
-    console.error("Failed to fetch preset stars from the database.");
-    return;
+    console.error(`Failed to fetch full preset: ${await response.json()}`)
   }
-  
+
   const data = await response.json();
+  console.log(data);
   return data;
 }
+
+const bodiesFromPreset = (preset: any): CelestialBody[] => {
+  const planets = (preset.planets || []).map((p: any) => {
+    const texture = p.texture_path && p.texture_path !== "test"
+      ? p.texture_path
+      : DEFAULT_PLANET_TEXTURE;
+
+    const ref = React.createRef<THREE.Mesh>();
+
+    const planet = new Planet(
+      p.mass,
+      [p.position_x, p.position_y, p.position_z],
+      [p.velocity_x, p.velocity_y, p.velocity_z],
+      p.radius,
+      p.spin,
+      p.color,
+      texture,
+      p.name
+    );
+
+    planet.meshRef = ref;
+    return planet;
+  });
+
+  const stars = (preset.stars || []).map((s: any) => {
+    const texture = s.texture_path && s.texture_path !== "test"
+      ? s.texture_path
+      : DEFAULT_STAR_TEXTURE;
+
+    const ref = React.createRef<THREE.Mesh>();
+
+    const star = new Star(
+      s.mass,
+      [s.position_x, s.position_y, s.position_z],
+      [s.velocity_x, s.velocity_y, s.velocity_z],
+      s.radius,
+      s.spin,
+      s.color,
+      texture,
+      s.name,
+      1, // luminosity
+      s.light_intensity
+    );
+
+    star.meshRef = ref;
+    return star;
+  });
+
+  return [...stars, ...planets];
+};

@@ -99,5 +99,38 @@ module.exports = (db) => {
         })
     })
 
+    // GET preset and all stars/planets connected
+    router.get("/:id/full", (req, res) => {
+        const id = req.params.id;
+        const result = {};
+
+        // 1. Get the preset
+        db.get("SELECT * FROM preset WHERE id = ?", [id], (err, preset) => {
+            if (err) return res.status(500).json(err);
+            if (!preset) return res.status(404).json({error: "Preset not found"})
+
+            result.preset_id=preset.id;
+            result.name=preset.name;
+            result.description=preset.description;
+            result.created_at=preset.created_at;
+            
+            // 2. Get Planets
+            db.all("SELECT * FROM planet WHERE preset_id = ?", [id], (err, planets) => {
+                if (err) return res.status(500).json(err);
+
+                result.planets = planets;
+
+                // 3. Get Stars
+                db.all("SELECT * FROM star WHERE preset_id = ?", [id], (err, stars) => {
+                    if (err) return res.status(500).json(err);
+
+                    result.stars = stars;
+
+                    return res.status(200).json(result);
+                })
+            })
+        })
+    })
+
     return router;
 }

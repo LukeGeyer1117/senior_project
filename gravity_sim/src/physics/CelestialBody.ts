@@ -13,7 +13,7 @@ export class CelestialBody {
   texture?: string;
   name?: string;
 
-  meshRef?: RefObject<THREE.Object3D>;  
+  meshRef?: RefObject<THREE.Mesh | null>;  
 
   constructor(
     mass: number, 
