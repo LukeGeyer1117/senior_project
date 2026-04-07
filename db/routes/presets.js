@@ -15,23 +15,25 @@ module.exports = (db) => {
     })
 
     // POST new preset
-    router.post("/", (req, res) => {
+    router.post("/", attachUser, (req, res) => {
         const { name, description } = req.body;
+        const user_id = req.userId;
 
-        if (!name) return res.status(400).json({error: "Name is required"});
+        if (!name) return res.status(400).json({ error: "Name is required" });
 
-        const sql = "INSERT INTO preset (name, description) VALUES (?, ?)"
+        const sql = "INSERT INTO preset (name, description, user_id) VALUES (?, ?, ?)";
 
-        db.run(sql, [name, description || null], function(err) {
-            if (err) return res.status(500).json(err);
+        db.run(sql, [name, description || null, user_id], function (err) {
+            if (err) return res.status(500).json({ error: "Database error" });
 
             res.status(201).json({
-                id: this.lastID,
-                name,
-                description
+            id: this.lastID,
+            name,
+            description,
+            user_id,
             });
-        })
-    })
+        });
+    });
 
     //
     // SINGLE PRESET ENDPOINTS
@@ -133,4 +135,12 @@ module.exports = (db) => {
     })
 
     return router;
+}
+
+function attachUser(req, res, next) {
+  // For now, assume client sends user_id in headers (or eventually from session/JWT)
+  const userId = req.headers["x-user-id"];
+  if (!userId) return res.status(401).json({ error: "Missing user authentication" });
+  req.userId = Number(userId); // attach it to request
+  next();
 }

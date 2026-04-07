@@ -19,11 +19,13 @@ const db = new sqlite3.Database('./database.sqlite', (err) => {
 const presetsRouter = require('./routes/presets')(db);
 const planetsRouter = require('./routes/planets')(db);
 const starsRouter = require('./routes/stars')(db);
+const usersRouter = require('./routes/users')(db);
 
 // Mount routers
 app.use("/api/presets", presetsRouter);
 app.use("/api/presets", planetsRouter);
 app.use("/api/presets", starsRouter);
+app.use("/api/users", usersRouter);
 app.get("/", (req, res) => {
   res.send("Server is alive");
 });

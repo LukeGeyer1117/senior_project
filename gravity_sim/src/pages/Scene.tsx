@@ -139,9 +139,11 @@ export default function Scene() {
           <BodiesWindow bodies={bodies} setBodies={setBodies} focusedRef={focusedRef} setFocusedRef={setFocusedRef} />
 
           {/* The botom bar */}
-          <div className="flex flex-row justify-center items-center w-full h-fit bg-info-content/80 pointer-events-auto">
-            <PlaybackControls playing={playing} setPlaying={setPlaying} speed={speed} setSpeed={setSpeed} />
-            <AmbientMusic />
+          <div className="flex-grow flex items-center justify-center">
+            <div className="flex flex-row justify-center items-center w-fit h-fit px-6 py-2 bg-info-content/80 pointer-events-auto rounded-lg gap-4">
+              <PlaybackControls playing={playing} setPlaying={setPlaying} speed={speed} setSpeed={setSpeed} />
+              <AmbientMusic />
+            </div>
           </div>
         </div>
       </div>

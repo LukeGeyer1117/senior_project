@@ -70,7 +70,7 @@ const BodiesWindow = ({bodies, setBodies, setFocusedRef}: BodiesWindowProps) => 
   }
 
   return (
-    <ul className="menu bg-info-content/70 w-fit h-full max-h-[90vh] overflow-y-scroll pointer-events-auto">
+    <ul className="menu bg-info-content/70 w-fit h-full max-h-[90vh] overflow-y-scroll overflow-x-auto pointer-events-auto">
       <li>
         <details>
           <summary>Objects</summary>

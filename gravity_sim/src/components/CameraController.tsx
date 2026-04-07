@@ -15,7 +15,7 @@ export const CameraController: React.FC<CameraControllerProps> = ({ body, contro
     useFrame(() => {
         if (body?.meshRef && controlsRef?.current) {
             // Get the world position of the Celestial Body
-            body.meshRef.current.getWorldPosition(targetPos);
+            body.meshRef?.current?.getWorldPosition(targetPos);
 
             // Smooth follow
             controlsRef.current.target.lerp(targetPos, 0.1);

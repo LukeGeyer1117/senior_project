@@ -1,13 +1,23 @@
--- The preset table stores the presets for simulations. 
+-- Users table for authentication
+CREATE TABLE IF NOT EXISTS "user" (
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "username" TEXT NOT NULL UNIQUE,
+    "password" TEXT NOT NULL,
+    "role" TEXT NOT NULL CHECK(role IN ('admin', 'user')),
+    "created_at" DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- The preset table stores the presets for simulations.
 -- Presets are collections of planets and stars that can be loaded
--- at simulation startup. Each preset has a name and an optional
--- description. Ideally, a preset will represent a unique, interesting
--- configuration that can be loaded repeatedly.
+-- at simulation startup. Each preset has a name, optional
+-- description, and an owner (user_id).
 CREATE TABLE IF NOT EXISTS "preset" (
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "name" TEXT NOT NULL,
     "description" TEXT,
-    "created_at" DATETIME DEFAULT CURRENT_TIMESTAMP
+    "user_id" INTEGER NOT NULL,
+    "created_at" DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE
 );
 
 -- The planet and star tables store the data necessary for creating 
