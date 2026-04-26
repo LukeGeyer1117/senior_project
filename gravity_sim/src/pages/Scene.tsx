@@ -54,11 +54,11 @@ export default function Scene() {
   const [bodies, setBodies] = useState<CelestialBody[]>(() => []);
   const [focusedRef, setFocusedRef] = useState<MutableRefObject<THREE.Mesh | null> | null>(null);
   const controlsRef = useRef<OrbitControlsImpl>(null);
-  const [showGrid, setShowGrid] = useState(true);
-  const [antiAlias, setAntiAlias] = useState(false);
+  const [showGrid, setShowGrid] = useState(false);
+  const [antiAlias, setAntiAlias] = useState(true);
   const [dpr, setDpr] = useState(1.0);
   const [powerPreference, setPowerPreference] = useState<"default" | "high-performance" | "low-power">("default");
-  const [shadows, setShadows] = useState(false);
+  const [shadows, setShadows] = useState(true);
   const [playing, setPlaying] = useState(true);
   const [speed, setSpeed] = useState(1);
 
@@ -201,6 +201,7 @@ const bodiesFromPreset = (preset: any): CelestialBody[] => {
       p.radius,
       p.spin,
       p.color,
+      p.trail_color,
       texture,
       p.name
     );
@@ -223,6 +224,7 @@ const bodiesFromPreset = (preset: any): CelestialBody[] => {
       s.radius,
       s.spin,
       s.color,
+      s.trail_color,
       texture,
       s.name,
       1, // luminosity

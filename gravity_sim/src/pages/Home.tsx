@@ -535,7 +535,7 @@ const NewPlanetModal = ({ presetId }: NewPlanetModalProps) => {
           >
             <option value="2k_earth_daymap.jpg">Earth</option>
             <option value="2k_jupiter.jpg">Jupiter</option>
-            <option value="2k_marks.jpg">Mars</option>
+            <option value="2k_mars.jpg">Mars</option>
             <option value="2k_mercury.jpg">Mercury</option>
             <option value="2k_moon.jpg">Moon</option>
             <option value="2k_uranus.jpg">Uranus</option>
@@ -870,7 +870,7 @@ const EditPlanetModal = ({ presetId, planetId, onUpdated, initialData }: EditPla
 
     try {
       const res = await fetch(
-        `http://127.0.0.1:3001/api/presets/${presetId}/planets/${planetId}`,
+        `http://localhost:3001/api/presets/${presetId}/planets/${planetId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -1029,7 +1029,7 @@ const EditStarModal = ({ presetId, starId, onUpdated, initialData }: EditStarMod
 
     try {
       const res = await fetch(
-        `http://127.0.0.1:3001/api/presets/${presetId}/stars/${starId}`,
+        `http://localhost:3001/api/presets/${presetId}/stars/${starId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },

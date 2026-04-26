@@ -7,46 +7,46 @@ import { Star } from "../physics/Star";
 import { OrbitControls } from 'three-stdlib';
 import { Trail } from "@react-three/drei";
 
-const PixelateShader = {
-  uniforms: {
-    map: { value: null },
-    pixelSize: { value: 32 }, // Adjust how blocky it is
-  },
-  vertexShader: `
-    varying vec2 vUv;
-    void main() {
-      vUv = uv;
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
-    }
-  `,
-  fragmentShader: `
-    uniform sampler2D map;
-    uniform float pixelSize;
-    varying vec2 vUv;
+// const PixelateShader = {
+//   uniforms: {
+//     map: { value: null },
+//     pixelSize: { value: 32 }, // Adjust how blocky it is
+//   },
+//   vertexShader: `
+//     varying vec2 vUv;
+//     void main() {
+//       vUv = uv;
+//       gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+//     }
+//   `,
+//   fragmentShader: `
+//     uniform sampler2D map;
+//     uniform float pixelSize;
+//     varying vec2 vUv;
 
-    void main() {
-      vec2 uv = vUv;
-      uv = floor(uv * pixelSize) / pixelSize;
-      gl_FragColor = texture2D(map, uv);
-    }
-  `
-};
+//     void main() {
+//       vec2 uv = vUv;
+//       uv = floor(uv * pixelSize) / pixelSize;
+//       gl_FragColor = texture2D(map, uv);
+//     }
+//   `
+// };
 
-const MaterialPixelated = ({ bodyData, texturePath }: { bodyData: CelestialBody, texturePath: string }) => {
-  const texture = useLoader(THREE.TextureLoader, texturePath);
+// const MaterialPixelated = ({ bodyData, texturePath }: { bodyData: CelestialBody, texturePath: string }) => {
+//   const texture = useLoader(THREE.TextureLoader, texturePath);
 
-  return (
-    <shaderMaterial
-      attach="material"
-      uniforms={{
-        map: { value: texture },
-        pixelSize: { value: 16 } // tweak this
-      }}
-      vertexShader={PixelateShader.vertexShader}
-      fragmentShader={PixelateShader.fragmentShader}
-    />
-  );
-};
+//   return (
+//     <shaderMaterial
+//       attach="material"
+//       uniforms={{
+//         map: { value: texture },
+//         pixelSize: { value: 16 } // tweak this
+//       }}
+//       vertexShader={PixelateShader.vertexShader}
+//       fragmentShader={PixelateShader.fragmentShader}
+//     />
+//   );
+// };
 
 // We need 2 Sub-Components. One for bodies with a texture, and one for bodies without.
 // --- SUB-COMPONENT 1: For bodies WITH a texture ---
@@ -168,15 +168,14 @@ export default function VisualizeBody({ bodyData, setFocus }: Props) {
     return (
         <>
           <Trail
-            width={20} // Width of the line
-            color={bodyData.color} // Color of the line
-            length={20} // Length of the line
-            decay={.8} // How fast the line fades away
-            local={false} // Wether to use the target's world or local positions
-            stride={0} // Min distance between previous and current point
-            interval={2} // Number of frames to wait before next calculation
-            target={undefined} // Optional target. This object will produce the trail.
-            attenuation={(width) => width} // A function to define the width in each point along it.
+            width={20}
+            color={bodyData.color}
+            length={20}
+            decay={.8}
+            local={false}
+            stride={0}
+            interval={2}
+            attenuation={(width) => width}
           >
             <mesh 
                 castShadow={!(bodyData instanceof Star)} 
