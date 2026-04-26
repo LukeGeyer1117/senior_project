@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import type { RefObject } from 'react';
 // import { degToRad } from 'three/src/math/MathUtils.js';
 
 export class CelestialBody {
@@ -9,11 +8,12 @@ export class CelestialBody {
   radius: number;
   spin: number;
   color: string;
+  trailColor: string;
   // Optional Texture Property
   texture?: string;
   name?: string;
 
-  meshRef?: RefObject<THREE.Mesh | null>;  
+  meshRef?: React.RefObject<THREE.Mesh | null>;
 
   constructor(
     mass: number, 
@@ -22,6 +22,7 @@ export class CelestialBody {
     radius: number,
     spin: number = 0,
     color: string = "pink",
+    trailColor: string="white",
     texture?: string,
     name?: string,
   ) {
@@ -31,6 +32,7 @@ export class CelestialBody {
     this.radius = radius;
     this.spin = spin;
     this.color = color;
+    this.trailColor = trailColor;
     this.texture = texture;
     this.name = name;
   }

@@ -19,12 +19,12 @@ const BodiesWindow = ({bodies, setBodies, setFocusedRef}: BodiesWindowProps) => 
   const [showStarForm, setShowStarForm] = useState(false);
   const [showPlanetForm, setShowPlanetForm] = useState(false);
 
-  const addStar = (mass: number, position: [number, number, number], velocity: [number, number, number], radius: number, spin: number, color: string, texture: string, name: string, luminosity: number, lightIntensity: number) => {
-    const newStar = new Star(mass, position, velocity, radius, spin, color, texture, name, luminosity, lightIntensity);
+  const addStar = (mass: number, position: [number, number, number], velocity: [number, number, number], radius: number, spin: number, color: string, trailColor: string, texture: string, name: string, luminosity: number, lightIntensity: number) => {
+    const newStar = new Star(mass, position, velocity, radius, spin, color, trailColor, texture, name, luminosity, lightIntensity);
     setBodies(prev => [...prev, newStar]);
   }
-  const addPlanet = (mass: number, position: [number, number, number], velocity: [number, number, number], radius: number, spin: number, color: string, texture?: string, name?: string) => {
-    const newPlanet = new Planet(mass, position, velocity, radius, spin, color, texture, name);
+  const addPlanet = (mass: number, position: [number, number, number], velocity: [number, number, number], radius: number, spin: number, color: string, trailColor: string, texture?: string, name?: string) => {
+    const newPlanet = new Planet(mass, position, velocity, radius, spin, color, trailColor, texture, name);
     setBodies(prev => [...prev, newPlanet]);
   }
 
@@ -41,6 +41,7 @@ const BodiesWindow = ({bodies, setBodies, setFocusedRef}: BodiesWindowProps) => 
       Number(starParams.radius),                              // radius
       Number(starParams.spin),                                // spin
       starParams.color,                                       // color
+      starParams.trailColor || starParams.color,             // trailColor
       starParams.texture,                                     // texture
       starParams.name,                                        // name
       1,                                                      // luminosity (defaulting to 1 as form lacks input)
@@ -62,6 +63,7 @@ const BodiesWindow = ({bodies, setBodies, setFocusedRef}: BodiesWindowProps) => 
       Number(planetParams.radius),
       Number(planetParams.spin),
       planetParams.color,
+      planetParams.trailColor || planetParams.color,
       planetParams.texture,
       planetParams.name,
     )
@@ -168,6 +170,15 @@ const BodiesWindow = ({bodies, setBodies, setFocusedRef}: BodiesWindowProps) => 
                             />
                           </div>
                           <div className="flex flex-col">
+                            <label className="label">Trail Color</label>
+                            <input
+                              className="input input-sm"
+                              type="color"
+                              value={starParams.trailColor}
+                              onChange={(e) => setStarParams({ ...starParams, trailColor: e.target.value })}
+                            />
+                          </div>
+                          <div className="flex flex-col">
                             <label className="label">Texture</label>
                             <select
                               className="select select-sm w-24"
@@ -200,8 +211,7 @@ const BodiesWindow = ({bodies, setBodies, setFocusedRef}: BodiesWindowProps) => 
                       {showStarForm ? "Cancel" : "Add Star"}
                     </button>
                   </li>
-                  {bodies.map((body) => (
-                    body instanceof Star && (
+                  {bodies.filter((body) => body instanceof Star).map((body) => (
                       <li
                         key={body.name}
                         className="w-full flex flex-row justify-between items-center"
@@ -224,7 +234,6 @@ const BodiesWindow = ({bodies, setBodies, setFocusedRef}: BodiesWindowProps) => 
                           &times;
                         </a>
                       </li>
-                    )
                   ))}
                 </ul>
               </details>
@@ -326,6 +335,16 @@ const BodiesWindow = ({bodies, setBodies, setFocusedRef}: BodiesWindowProps) => 
                             />
                           </div>
 
+                          <div className="flex flex-col">
+                            <label className="label">Trail Color</label>
+                            <input
+                              className="input input-sm w-12 p-0 px-1"
+                              type="color"
+                              value={planetParams.trailColor}
+                              onChange={(e) => setPlanetParams({ ...planetParams, trailColor: e.target.value })}
+                            />
+                          </div>
+
                           {/* FINISH BUTTON */}
                           <div className="flex flex-col justify-end">
                             <button className="btn btn-sm btn-success" onClick={handleConfirmPlanet}>
@@ -344,8 +363,7 @@ const BodiesWindow = ({bodies, setBodies, setFocusedRef}: BodiesWindowProps) => 
                       {showPlanetForm ? "Cancel" : "Add Planet"}
                     </button>
                   </li>
-                  {bodies.map((body) => (
-                    body instanceof Planet && (
+                  {bodies.filter((body) => body instanceof Planet).map((body) => (
                       <li
                         key={body.name}
                         className="w-full flex flex-row justify-between items-center"
@@ -368,7 +386,6 @@ const BodiesWindow = ({bodies, setBodies, setFocusedRef}: BodiesWindowProps) => 
                           &times;
                         </a>
                       </li>
-                    )
                   ))}
                 </ul>
               </details>

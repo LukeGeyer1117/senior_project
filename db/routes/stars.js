@@ -24,16 +24,16 @@ module.exports = (db) => {
     // POST a new star to a preset
     router.post("/:preset_id/stars", (req, res) => {
         const preset_id = Number(req.params.preset_id);
-        const { mass, position_x, position_y, position_z, velocity_x, velocity_y, velocity_z, radius, spin, color, light_intensity, texture_path, name } = req.body;
+        const { mass, position_x, position_y, position_z, velocity_x, velocity_y, velocity_z, radius, spin, color, trail_color, light_intensity, texture_path, name } = req.body;
 
         if (!Number.isInteger(preset_id)) return res.status(400).json({error: "Preset ID must be an integer"});
 
-        if (mass === undefined || position_x === undefined || position_y === undefined || position_z === undefined || velocity_x === undefined || velocity_y === undefined || velocity_z === undefined || radius === undefined || spin === undefined || color === undefined || light_intensity === undefined) {
-            return res.status(400).json({error: "Missing required parameters\n(required are mass, position (3), velocity (3), radius, spin, color, light_intensity).\n(Optional are texture_path and name)"});
+        if (mass === undefined || position_x === undefined || position_y === undefined || position_z === undefined || velocity_x === undefined || velocity_y === undefined || velocity_z === undefined || radius === undefined || spin === undefined || color === undefined || trail_color === undefined || light_intensity === undefined) {
+            return res.status(400).json({error: "Missing required parameters\n(required are mass, position (3), velocity (3), radius, spin, color, trail_color, light_intensity).\n(Optional are texture_path and name)"});
         }
 
-        const fields = ["preset_id", "mass", "position_x", "position_y", "position_z", "velocity_x", "velocity_y", "velocity_z", "radius", "spin", "color", "light_intensity"];
-        const values = [preset_id ,mass, position_x, position_y, position_z, velocity_x, velocity_y, velocity_z, radius, spin, color, light_intensity];
+        const fields = ["preset_id", "mass", "position_x", "position_y", "position_z", "velocity_x", "velocity_y", "velocity_z", "radius", "spin", "color", "trail_color", "light_intensity"];
+        const values = [preset_id ,mass, position_x, position_y, position_z, velocity_x, velocity_y, velocity_z, radius, spin, color, trail_color, light_intensity];
 
         if (texture_path !== undefined) {
             fields.push("texture_path");
@@ -48,7 +48,10 @@ module.exports = (db) => {
         const sql = `INSERT INTO star (${fields.join(", ")}) VALUES (${fields.map(() => "?").join(", ")})`; 
 
         db.run(sql, values, function (err) {
-            if (err) return res.status(500).json({error: "Database error"});
+            if (err) {
+              console.error("DB Error:", err);
+              return res.status(500).json({error: "Database error"});
+            }
             res.json({
                 message: "Star created",
                 id: this.lastID
@@ -85,7 +88,7 @@ module.exports = (db) => {
         if (!Number.isInteger(preset_id)) return res.status(400).json({error: "Preset ID must be an integer"});
         if (!Number.isInteger(star_id)) return res.status(400).json({error: "Star ID must be an integer"});
 
-        const {mass, position_x, position_y, position_z, velocity_x, velocity_y, velocity_z, radius, spin, color, light_intensity, texture_path, name} = req.body;
+        const {mass, position_x, position_y, position_z, velocity_x, velocity_y, velocity_z, radius, spin, color, trail_color, light_intensity, texture_path, name} = req.body;
 
         fields = [];
         values = [];
@@ -129,6 +132,10 @@ module.exports = (db) => {
         if (color !== undefined) {
             fields.push("color=?");
             values.push(color);
+        }
+        if (trail_color !== undefined) {
+            fields.push("trail_color=?");
+            values.push(trail_color);
         }
         if (light_intensity !== undefined) {
             fields.push("light_intensity=?");

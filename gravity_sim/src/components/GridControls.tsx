@@ -8,7 +8,7 @@ interface GridControlProps {
 const GridControls = ({showGrid, setShowGrid}: GridControlProps) => {
 
     return (
-        <div className="dropdown dropdown-end">
+        <div className="dropdown dropdown-end z-2">
             <div tabIndex={0} role="button" className="btn m-1 bg-transparent border-none">
               <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" className="css-i6dzq1"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
             </div>

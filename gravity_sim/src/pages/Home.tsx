@@ -26,6 +26,7 @@ type Planet = {
   radius: number;
   spin: number;
   color: string;
+  trail_color: string;
   texture_path?: string;
   name?: string;
 };
@@ -96,8 +97,8 @@ function Home() {
 
   return (
     <div className="p-10 flex flex-col items-start gap-6 w-full h-full">
-      <div>
-        <div className="text-4xl font-extrabold w-full text-center">
+      <div className="flex flex-row w-full justify-between items-center">
+        <div className="text-4xl font-extrabold w-fit text-center">
           SpaceBox
         </div>
         <Authenticator login={login}>
@@ -425,6 +426,7 @@ const NewPlanetModal = ({ presetId }: NewPlanetModalProps) => {
     radius: 1.5,
     spin: 0.2,
     color: "#FFFFFF",
+    trail_color: "#FFFFFF",
     texture_path: "2k_earth_daymap.jpg",
 
     position_x: 0,
@@ -480,63 +482,90 @@ const NewPlanetModal = ({ presetId }: NewPlanetModalProps) => {
 
         <h3 className="font-bold text-lg text-center">Create New Planet</h3>
 
-        {/* ===== BASIC INFO ===== */}
-        <input
-          className="input input-bordered"
-          placeholder="Name"
-          value={form.name}
-          onChange={(e) => handleChange("name", e.target.value)}
-        />
+        <fieldset className="fieldset">
+          <legend className="fieldset-legend">Name</legend>
+          <input
+            className="input input-bordered"
+            placeholder="Name"
+            value={form.name}
+            onChange={(e) => handleChange("name", e.target.value)}
+          />
+        </fieldset>
 
         <div className="grid grid-cols-2 gap-2">
-          <input
-            className="input input-bordered"
-            type="number"
-            placeholder="Mass"
-            value={form.mass}
-            onChange={(e) => handleChange("mass", e.target.value)}
-          />
-          <input
-            className="input input-bordered"
-            type="number"
-            placeholder="Radius"
-            value={form.radius}
-            onChange={(e) => handleChange("radius", e.target.value)}
-          />
+          <fieldset className="fieldset">
+            <legend className="fieldset-legend">Mass</legend>
+            <input
+              className="input input-bordered"
+              type="number"
+              placeholder="Mass"
+              value={form.mass}
+              onChange={(e) => handleChange("mass", e.target.value)}
+            />
+          </fieldset>
+          <fieldset className="fieldset">
+            <legend className="fieldset-legend">Radius</legend>
+            <input
+              className="input input-bordered"
+              type="number"
+              placeholder="Radius"
+              value={form.radius}
+              onChange={(e) => handleChange("radius", e.target.value)}
+            />
+          </fieldset>
         </div>
 
-        <input
-          className="input input-bordered"
-          type="number"
-          placeholder="Spin"
-          value={form.spin}
-          onChange={(e) => handleChange("spin", e.target.value)}
-        />
+        <fieldset className="fieldset">
+          <legend className="fieldset-legend">Spin</legend>
+          <input
+            className="input input-bordered"
+            type="number"
+            placeholder="Spin"
+            value={form.spin}
+            onChange={(e) => handleChange("spin", e.target.value)}
+          />
+        </fieldset>
 
-        <select
-          className="select select-bordered w-full"
-          value={form.texture_path}
-          onChange={(e) => handleChange("texture_path", e.target.value)}
-        >
-          <option value="2k_earth_daymap.jpg">Earth</option>
-          <option value="2k_jupiter.jpg">Jupiter</option>
-          <option value="2k_marks.jpg">Mars</option>
-          <option value="2k_mercury.jpg">Mercury</option>
-          <option value="2k_moon.jpg">Moon</option>
-          <option value="2k_uranus.jpg">Uranus</option>
-          <option value="2k_venus_atmosphere.jpg">Venus</option>
-        </select>
+        <fieldset className="fieldset">
+          <legend className="fieldset-legend">Texture Path</legend>
+          <select
+            className="select select-bordered w-full"
+            value={form.texture_path}
+            onChange={(e) => handleChange("texture_path", e.target.value)}
+          >
+            <option value="2k_earth_daymap.jpg">Earth</option>
+            <option value="2k_jupiter.jpg">Jupiter</option>
+            <option value="2k_marks.jpg">Mars</option>
+            <option value="2k_mercury.jpg">Mercury</option>
+            <option value="2k_moon.jpg">Moon</option>
+            <option value="2k_uranus.jpg">Uranus</option>
+            <option value="2k_venus_atmosphere.jpg">Venus</option>
+          </select>
+        </fieldset>
 
-        <input
-          className="input input-bordered"
-          type="color"
-          value={form.color}
-          onChange={(e) => handleChange("color", e.target.value)}
-        />
+        <fieldset className="fieldset">
+          <legend className="fieldset-legend">Color</legend>
+          <input
+            className="input input-bordered"
+            type="color"
+            value={form.color}
+            onChange={(e) => handleChange("color", e.target.value)}
+          />
+        </fieldset>
 
-        {/* ===== POSITION ===== */}
-        <div>
-          <div className="font-semibold">Position</div>
+        <fieldset className="fieldset">
+          <legend className="fieldset-legend">Trail Color</legend>
+          <input
+            className="input input-bordered"
+            type="color"
+            placeholder="Trail Color"
+            value={form.trail_color}
+            onChange={(e) => handleChange("trail_color", e.target.value)}
+          />
+        </fieldset>
+
+        <fieldset className="fieldset">
+          <legend className="fieldset-legend">Position</legend>
           <div className="grid grid-cols-3 gap-2">
             <input className="input input-bordered" type="number" placeholder="X"
               value={form.position_x}
@@ -548,11 +577,10 @@ const NewPlanetModal = ({ presetId }: NewPlanetModalProps) => {
               value={form.position_z}
               onChange={(e) => handleChange("position_z", e.target.value)} />
           </div>
-        </div>
+        </fieldset>
 
-        {/* ===== VELOCITY ===== */}
-        <div>
-          <div className="font-semibold">Velocity</div>
+        <fieldset className="fieldset">
+          <legend className="fieldset-legend">Velocity</legend>
           <div className="grid grid-cols-3 gap-2">
             <input className="input input-bordered" type="number" placeholder="X"
               value={form.velocity_x}
@@ -564,7 +592,7 @@ const NewPlanetModal = ({ presetId }: NewPlanetModalProps) => {
               value={form.velocity_z}
               onChange={(e) => handleChange("velocity_z", e.target.value)} />
           </div>
-        </div>
+        </fieldset>
 
         {/* ===== ACTIONS ===== */}
         <div className="flex justify-end gap-2 mt-4">
@@ -597,6 +625,7 @@ const NewStarModal = ({ presetId, onCreated }: NewStarModalProps) => {
     radius: 10,
     spin: 0.1,
     color: "#ffffff",
+    trail_color: "#ffffff",
     texture_path: "2k_sun.jpg",
 
     light_intensity: 10,
@@ -660,64 +689,94 @@ const NewStarModal = ({ presetId, onCreated }: NewStarModalProps) => {
         <h3 className="font-bold text-lg text-center">Create New Star</h3>
 
         {/* ===== BASIC INFO ===== */}
-        <input
-          className="input input-bordered"
-          placeholder="Name"
-          value={form.name}
-          onChange={(e) => handleChange("name", e.target.value)}
-        />
+        <fieldset className="fieldset">
+          <legend className="fieldset-legend">Name</legend>
+          <input
+            className="input input-bordered"
+            placeholder="Name"
+            value={form.name}
+            onChange={(e) => handleChange("name", e.target.value)}
+          />
+        </fieldset>
 
         <div className="grid grid-cols-2 gap-2">
-          <input
-            className="input input-bordered"
-            type="number"
-            placeholder="Mass"
-            value={form.mass}
-            onChange={(e) => handleChange("mass", e.target.value)}
-          />
-          <input
-            className="input input-bordered"
-            type="number"
-            placeholder="Radius"
-            value={form.radius}
-            onChange={(e) => handleChange("radius", e.target.value)}
-          />
+          <fieldset className="fieldset">
+            <legend className="fieldset-legend">Mass</legend>
+            <input
+              className="input input-bordered"
+              type="number"
+              placeholder="Mass"
+              value={form.mass}
+              onChange={(e) => handleChange("mass", e.target.value)}
+            />
+          </fieldset>
+
+          <fieldset className="fieldset">
+            <legend className="fieldset-legend">Radius</legend>
+            <input
+              className="input input-bordered"
+              type="number"
+              placeholder="Radius"
+              value={form.radius}
+              onChange={(e) => handleChange("radius", e.target.value)}
+            />
+          </fieldset>
         </div>
 
-        <input
-          className="input input-bordered"
-          type="number"
-          placeholder="Spin"
-          value={form.spin}
-          onChange={(e) => handleChange("spin", e.target.value)}
-        />
+        <fieldset className="fieldset">
+          <legend className="fieldset-legend">Spin</legend>
+          <input
+            className="input input-bordered"
+            type="number"
+            placeholder="Spin"
+            value={form.spin}
+            onChange={(e) => handleChange("spin", e.target.value)}
+          />
+        </fieldset>
 
-        <input
-          className="input input-bordered"
-          placeholder="Texture Path"
-          value={form.texture_path}
-          onChange={(e) => handleChange("texture_path", e.target.value)}
-        />
+        <fieldset className="fieldset">
+          <legend className="fieldset-legend">Texture Path</legend>
+          <input
+            className="input input-bordered"
+            placeholder="Texture Path"
+            value={form.texture_path}
+            onChange={(e) => handleChange("texture_path", e.target.value)}
+          />
+        </fieldset>
 
-        <input
-          className="input input-bordered"
-          type="color"
-          value={form.color}
-          onChange={(e) => handleChange("color", e.target.value)}
-        />
+        <fieldset className="fieldset">
+          <legend className="fieldset-legend">Color</legend>
+          <input
+            className="input input-bordered"
+            type="color"
+            value={form.color}
+            onChange={(e) => handleChange("color", e.target.value)}
+          />
+        </fieldset>
+        
+        <fieldset className="fieldset">
+          <legend className="fieldset-legend">Trail Color</legend>
+          <input
+            className="input input-bordered"
+            type="color"
+            value={form.trail_color}
+            onChange={(e) => handleChange("trail_color", e.target.value)}
+          />
+        </fieldset>
 
-        {/* ⭐ STAR-SPECIFIC */}
-        <input
-          className="input input-bordered"
-          type="number"
-          placeholder="Light Intensity"
-          value={form.light_intensity}
-          onChange={(e) => handleChange("light_intensity", e.target.value)}
-        />
+        <fieldset className="fieldset">
+          <legend className="fieldset-legend">Light Intensity</legend>
+          <input
+            className="input input-bordered"
+            type="number"
+            placeholder="Light Intensity"
+            value={form.light_intensity}
+            onChange={(e) => handleChange("light_intensity", e.target.value)}
+          />
+        </fieldset>
 
-        {/* ===== POSITION ===== */}
-        <div>
-          <div className="font-semibold">Position</div>
+        <fieldset className="fieldset">
+          <legend className="fieldset-legend">Position</legend>
           <div className="grid grid-cols-3 gap-2">
             <input className="input input-bordered" type="number" placeholder="X"
               value={form.position_x}
@@ -729,11 +788,10 @@ const NewStarModal = ({ presetId, onCreated }: NewStarModalProps) => {
               value={form.position_z}
               onChange={(e) => handleChange("position_z", e.target.value)} />
           </div>
-        </div>
+        </fieldset>
 
-        {/* ===== VELOCITY ===== */}
-        <div>
-          <div className="font-semibold">Velocity</div>
+        <fieldset className="fieldset">
+          <legend className="fieldset-legend">Velocity</legend>
           <div className="grid grid-cols-3 gap-2">
             <input className="input input-bordered" type="number" placeholder="X"
               value={form.velocity_x}
@@ -745,7 +803,7 @@ const NewStarModal = ({ presetId, onCreated }: NewStarModalProps) => {
               value={form.velocity_z}
               onChange={(e) => handleChange("velocity_z", e.target.value)} />
           </div>
-        </div>
+        </fieldset>
 
         {/* ACTIONS */}
         <div className="flex justify-end gap-2 mt-4">

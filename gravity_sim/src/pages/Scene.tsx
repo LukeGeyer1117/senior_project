@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import type { MutableRefObject } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls } from '@react-three/drei';
+import { OrbitControls, Stats } from '@react-three/drei';
 import * as THREE from "three";
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { useSearchParams } from "react-router-dom";
@@ -22,7 +22,9 @@ import { Skybox } from "../components/Skybox";
 import AmbientMusic from "../components/AmbientMusic";
 import BodiesWindow from "../components/BodiesWindow";
 import GridControls from "../components/GridControls";
+import GraphicsControls from "../components/GraphicsControls";
 import PlaybackControls from "../components/PlaybackControls";
+import Inspector from "../components/Inspector";
 
 const DEFAULT_PLANET_TEXTURE = "2k_earth_daymap.jpg";
 const DEFAULT_STAR_TEXTURE = "2k_sun.jpg";
@@ -53,12 +55,22 @@ export default function Scene() {
   const [focusedRef, setFocusedRef] = useState<MutableRefObject<THREE.Mesh | null> | null>(null);
   const controlsRef = useRef<OrbitControlsImpl>(null);
   const [showGrid, setShowGrid] = useState(true);
+  const [antiAlias, setAntiAlias] = useState(false);
+  const [dpr, setDpr] = useState(1.0);
+  const [powerPreference, setPowerPreference] = useState<"default" | "high-performance" | "low-power">("default");
+  const [shadows, setShadows] = useState(false);
   const [playing, setPlaying] = useState(true);
   const [speed, setSpeed] = useState(1);
 
   const presetID = Number(searchParams.get("preset"));
 
   const [loadedPresetID, setLoadedPresetID] = useState<number | null>(null);
+  const [tick, setTick] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => setTick(t => t + 1), 16);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     if (!presetID || presetID === -1 || loadedPresetID === presetID) return;
@@ -94,9 +106,12 @@ export default function Scene() {
       onContextMenu={(e) => e.preventDefault()} // Stop right-click menu showing up
     >
       <Canvas
+        key={antiAlias ? 'aa-on' : 'aa-off'} // forces remount
         shadows
         className="w-full h-full bg-black"
         camera={{ position: [0, 100, 300], fov: 60, near: 0.1, far: 500000 }}
+        dpr={dpr}
+        gl={{ antialias: antiAlias, powerPreference: powerPreference }}
       >
         <OrbitControls
           ref={controlsRef}
@@ -111,6 +126,7 @@ export default function Scene() {
         <FocusRing
           body={focusedBody}
         />
+        <Stats className="!top-auto !left-auto !right-2 !bottom-2 scale-200"/>
 
         {bodies.map((body, index) => (
           <VisualizeBody
@@ -131,8 +147,13 @@ export default function Scene() {
         <div className="pointer-events-auto bg-info-content/80 text-white p-4 backdrop-blur-sm flex justify-between items-center w-full h-[10vh]">
           <Link to={"/"} className="text-xl font-bold">Space<span className="text-info">Box</span></Link>
           {/* Grid Controls */}
-          <GridControls showGrid={showGrid} setShowGrid={setShowGrid} />
+          <div>
+            <GridControls showGrid={showGrid} setShowGrid={setShowGrid} />
+            <GraphicsControls antiAlias={antiAlias} setAntiAlias={setAntiAlias} dpr={dpr} setDpr={setDpr} powerPreference={powerPreference} setPowerPreference={setPowerPreference} shadows={shadows} setShadows={setShadows} />
+          </div>
         </div>
+
+        <Inspector body={focusedBody} tick={tick} />
 
         {/* The forms, lists, and buttons that allow adding planets and stars */}
         <div className="w-full h-full flex flex-row justify-between items-end">

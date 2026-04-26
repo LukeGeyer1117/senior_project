@@ -9,10 +9,11 @@ export class Planet extends CelestialBody {
         radius: number,
         spin: number = 0,
         color: string = "white",
+        trailColor: string="white",
         texture?: string,
         name?: string,
     ) {
-        super(mass, position, velocity, radius, spin, color, texture, name);
+        super(mass, position, velocity, radius, spin, color, trailColor, texture, name);
     }
 }
 
@@ -25,6 +26,7 @@ export function usePlanet() {
         posX: 150, posY: 0, posZ: 0,
         velX: 0, velY: 0, velZ: 60,
         color: "#FFFFFF",
+        trailColor: "#FFFFFF",
         texture: "2k_earth_daymap.jpg"
     })
 

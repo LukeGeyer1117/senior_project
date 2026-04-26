@@ -13,12 +13,13 @@ export class Star extends CelestialBody {
         radius: number,
         spin: number = 0,
         color: string = "white",
+        trailColor: string="white",
         texture?: string,
         name?: string,
         luminosity: number = 1,
         lightIntensity: number = 10
     ) {
-        super(mass, position, velocity, radius, spin, color, texture, name);
+        super(mass, position, velocity, radius, spin, color, trailColor, texture, name);
 
         this.luminosity = luminosity;   
         this.lightColor = color;
@@ -35,6 +36,7 @@ export function useStar() {
         posX: 0, posY: 0, posZ: 0,
         velX: 0, velY: 0, velZ: 0,
         color: "#ffffff",
+        trailColor: "#ffffff",
         intensity: 5,
         texture: "2k_sun.jpg"
     })

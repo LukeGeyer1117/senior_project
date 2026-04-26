@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { CelestialBody } from "../physics/CelestialBody";
 import { Star } from "../physics/Star";
 import { OrbitControls } from 'three-stdlib';
+import { Trail } from "@react-three/drei";
 
 const PixelateShader = {
   uniforms: {
@@ -151,7 +152,7 @@ export default function VisualizeBody({ bodyData, setFocus }: Props) {
 
     useEffect(() => {
         // Safely cast the Mesh ref to the Object3D ref expected by the class
-        bodyData.meshRef = meshRef as unknown as React.RefObject<THREE.Object3D>;
+        bodyData.meshRef = meshRef;
     }, [bodyData]);
 
     useFrame((_, delta) => {
@@ -166,6 +167,17 @@ export default function VisualizeBody({ bodyData, setFocus }: Props) {
 
     return (
         <>
+          <Trail
+            width={20} // Width of the line
+            color={bodyData.color} // Color of the line
+            length={20} // Length of the line
+            decay={.8} // How fast the line fades away
+            local={false} // Wether to use the target's world or local positions
+            stride={0} // Min distance between previous and current point
+            interval={2} // Number of frames to wait before next calculation
+            target={undefined} // Optional target. This object will produce the trail.
+            attenuation={(width) => width} // A function to define the width in each point along it.
+          >
             <mesh 
                 castShadow={!(bodyData instanceof Star)} 
                 receiveShadow={!(bodyData instanceof Star)} 
@@ -198,6 +210,7 @@ export default function VisualizeBody({ bodyData, setFocus }: Props) {
                     />
                 )}
             </mesh>
+          </Trail>
         </>
     );
 }

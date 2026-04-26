@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS "planet" (
     "radius" REAL NOT NULL,
     "spin" REAL NOT NULL,
     "color" TEXT NOT NULL,
+    "trail_color" TEXT NOT NULL,
 
     -- Body properties not required for initialization
     "texture_path" TEXT,
@@ -63,6 +64,7 @@ CREATE TABLE IF NOT EXISTS "star" (
     "radius" REAL NOT NULL,
     "spin" REAL NOT NULL,
     "color" TEXT NOT NULL,
+    "trail_color" TEXT NOT NULL,
 
     -- Star light properties
     "light_intensity" REAL NOT NULL,

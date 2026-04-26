@@ -74,7 +74,7 @@ export const Grid: React.FC<GridProps> = ({ bodies }) => {
         uBodies: { value: Array.from({ length: MAX_BODIES }, () => new THREE.Vector4()) },
         uBodyCount: { value: 0 },
         uGravityConstant: { value: GRAVITY_CONSTANT },
-        uColor: { value: new THREE.Color('#97aabb') }
+        uColor: { value: new THREE.Color('#9bf077') }
     }), []);
 
     // 2. Handle standard DOM inputs for Grid controls
