@@ -101,7 +101,7 @@ function Home() {
         <div className="text-4xl font-extrabold w-fit text-center">
           SpaceBox
         </div>
-        <Authenticator login={login}>
+        <Authenticator>
           <h1>Welcome, authenticated user!</h1>
           {/* The rest of your page */}
         </Authenticator>
@@ -618,7 +618,7 @@ type NewStarModalProps = {
   onCreated?: () => void;
 };
 
-const NewStarModal = ({ presetId, onCreated }: NewStarModalProps) => {
+const NewStarModal = ({ presetId }: NewStarModalProps) => {
   const [form, setForm] = useState({
     name: "",
     mass: 10,
@@ -1200,26 +1200,6 @@ async function deletePreset(preset_id: number) {
 
   console.log(`Preset ${preset_id} deleted successfully.`);
   return true;
-}
-
-
-// Example login function
-async function login() {
-  const res = await fetch("http://localhost:3001/api/users/login", { method: "POST" });
-
-  // Make sure response is OK
-  if (!res.ok) {
-    throw new Error(`Login failed with status ${res.status}`);
-  }
-
-  // Check if response has body
-  const text = await res.text();
-  if (!text) {
-    throw new Error("Empty response from login API");
-  }
-
-  const data = JSON.parse(text);
-  return { id: data.id }; // make sure your API actually returns { userId: string }
 }
 
 export default Home;

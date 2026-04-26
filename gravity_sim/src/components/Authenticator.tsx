@@ -1,32 +1,14 @@
 // Example: simple Authenticator.tsx snippet
 import { useState } from "react";
+import type {ReactNode} from "react";
 
-export default function Authenticator() {
+interface AuthenticatorProps {
+  children?: ReactNode;
+}
+
+const Authenticator = ({ children }: AuthenticatorProps) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
-  const handleLogin = async () => {
-    try {
-      const res = await fetch("http://localhost:3001/api/users/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        // store user id in localStorage
-        localStorage.setItem("userId", data.id);
-        alert("Login successful!");
-      } else {
-        alert("Login failed: " + data.error);
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Login request failed");
-    }
-  };
 
   return (
     <div>
@@ -55,12 +37,39 @@ export default function Authenticator() {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <button className="btn btn-info w-full" onClick={handleLogin}>Login</button>
+          <button className="btn btn-info w-full" onClick={() => login(username, password)}>Login</button>
         </div>
         <form method="dialog" className="modal-backdrop">
           <button>close</button>
         </form>
       </dialog>
+
+      {children}
     </div>
   );
-}
+};
+
+// Example login function
+async function login(username: String, password: String) {
+  try {
+    const res = await fetch("http://localhost:3001/api/users/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      localStorage.setItem("userId", data.id);
+      alert("Login successful!");
+    } else {
+      alert("Login failed: " + data.error);
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Login request failed");
+  }
+};
+
+export default Authenticator;
