@@ -6,7 +6,7 @@ interface BodyInspectorProps {
   tick?: number;
 }
 
-const BodyInspector = ({ body, tick }: BodyInspectorProps) => {
+const BodyInspector = ({ body }: BodyInspectorProps) => {
   if (!body) return null;
 
   const isStar = body instanceof Star;
