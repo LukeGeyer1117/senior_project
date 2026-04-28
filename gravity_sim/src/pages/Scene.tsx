@@ -40,12 +40,13 @@ function PhysicsTick({ bodies, playing, speed }: PhysicsTickProps) {
   useFrame((_, delta) => {
     if (!playing) return;
 
-    const scaledDelta = delta * speed;
+    const safeDelta = Math.min(delta, 0.016); // cap at ~60fps timestep
+    const scaledDelta = safeDelta * speed;
 
-    // Collide(bodies, delta);
     CalculateGravity(bodies, scaledDelta);
     bodies.forEach(body => body.updatePosition(scaledDelta));
   });
+
   return null;
 }
 

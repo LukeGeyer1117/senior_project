@@ -168,7 +168,7 @@ export default function VisualizeBody({ bodyData, setFocus }: Props) {
     return (
         <>
           <Trail
-            width={20}
+            width={60}
             color={bodyData.color}
             length={20}
             decay={.8}
