@@ -1,6 +1,6 @@
 # Gravity Simulator
 
-A 3D gravity simulation built with React, Three.js, and Tailwind CSS.
+A 3D gravity simulation built with React, Three.js, and Tailwind CSS. The gravity simulation takes advantage of direct pairwise force summation and semi-implicit Euler integration to calculate orbits in a stable manner.
 
 ## Prerequisites
 
