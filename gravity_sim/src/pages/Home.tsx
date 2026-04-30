@@ -841,9 +841,36 @@ interface EditPlanetModalProps {
 }
 
 const EditPlanetModal = ({ presetId, planetId, onUpdated, initialData }: EditPlanetModalProps) => {
-  const [form, setForm] = useState<EditPlanetModalProps["initialData"]>(
-    initialData || {}
-  );
+  const [form, setForm] = useState(() => ({
+    name: "",
+    mass: 0,
+    radius: 0,
+    spin: 0,
+    color: "#ffffff",
+    position_x: 0,
+    position_y: 0,
+    position_z: 0,
+    velocity_x: 0,
+    velocity_y: 0,
+    velocity_z: 0,
+  }));
+  useEffect(() => {
+    if (!initialData) return;
+
+    setForm({
+      name: initialData.name ?? "",
+      mass: initialData.mass ?? 0,
+      radius: initialData.radius ?? 0,
+      spin: initialData.spin ?? 0,
+      color: initialData.color ?? "#ffffff",
+      position_x: initialData.position_x ?? 0,
+      position_y: initialData.position_y ?? 0,
+      position_z: initialData.position_z ?? 0,
+      velocity_x: initialData.velocity_x ?? 0,
+      velocity_y: initialData.velocity_y ?? 0,
+      velocity_z: initialData.velocity_z ?? 0,
+    });
+  }, [initialData]);
 
   const numericFields = [
     "mass", "radius", "spin",
@@ -902,8 +929,8 @@ const EditPlanetModal = ({ presetId, planetId, onUpdated, initialData }: EditPla
         <input
           className="input input-bordered"
           placeholder="Name"
-          value={form?.name || ""}
-          onChange={(e) => handleChange("name", e.target.value)}
+          value={form.name}
+          onChange={(e) => setForm({...form, name: e.target.value})}
         />
 
         <div className="grid grid-cols-2 gap-2">
@@ -911,15 +938,15 @@ const EditPlanetModal = ({ presetId, planetId, onUpdated, initialData }: EditPla
             className="input input-bordered"
             type="number"
             placeholder="Mass"
-            value={form?.mass ?? ""}
-            onChange={(e) => handleChange("mass", e.target.value)}
+            value={form.mass}
+            onChange={(e) => setForm({...form, mass: Number(e.target.value)})}
           />
           <input
             className="input input-bordered"
             type="number"
             placeholder="Radius"
-            value={form?.radius ?? ""}
-            onChange={(e) => handleChange("radius", e.target.value)}
+            value={form.radius}
+            onChange={(e) => setForm({...form, radius: Number(e.target.value)})}
           />
         </div>
 
@@ -927,15 +954,15 @@ const EditPlanetModal = ({ presetId, planetId, onUpdated, initialData }: EditPla
           className="input input-bordered"
           type="number"
           placeholder="Spin"
-          value={form?.spin ?? ""}
-          onChange={(e) => handleChange("spin", e.target.value)}
+          value={form.spin}
+          onChange={(e) => setForm({...form, spin: Number(e.target.value)})}
         />
 
         <input
           className="input input-bordered"
           type="color"
-          value={form?.color || "#ffffff"}
-          onChange={(e) => handleChange("color", e.target.value)}
+          value={form.color}
+          onChange={(e) => setForm({...form, color: e.target.value})}
         />
 
         {/* POSITION */}
@@ -943,11 +970,11 @@ const EditPlanetModal = ({ presetId, planetId, onUpdated, initialData }: EditPla
           <div className="font-semibold">Position</div>
           <div className="grid grid-cols-3 gap-2">
             <input className="input input-bordered" type="number" placeholder="X"
-              value={form?.position_x ?? ""} onChange={(e) => handleChange("position_x", e.target.value)} />
+              value={form.position_x} onChange={(e) => setForm({...form, position_x: Number(e.target.value)})} />
             <input className="input input-bordered" type="number" placeholder="Y"
-              value={form?.position_y ?? ""} onChange={(e) => handleChange("position_y", e.target.value)} />
+              value={form.position_y} onChange={(e) => setForm({...form, position_y: Number(e.target.value)})} />
             <input className="input input-bordered" type="number" placeholder="Z"
-              value={form?.position_z ?? ""} onChange={(e) => handleChange("position_z", e.target.value)} />
+              value={form.position_z} onChange={(e) => setForm({...form, position_z: Number(e.target.value)})} />
           </div>
         </div>
 
@@ -956,11 +983,11 @@ const EditPlanetModal = ({ presetId, planetId, onUpdated, initialData }: EditPla
           <div className="font-semibold">Velocity</div>
           <div className="grid grid-cols-3 gap-2">
             <input className="input input-bordered" type="number" placeholder="X"
-              value={form?.velocity_x ?? ""} onChange={(e) => handleChange("velocity_x", e.target.value)} />
+              value={form.velocity_x} onChange={(e) => setForm({...form, velocity_x: Number(e.target.value)})} />
             <input className="input input-bordered" type="number" placeholder="Y"
-              value={form?.velocity_y ?? ""} onChange={(e) => handleChange("velocity_y", e.target.value)} />
+              value={form.velocity_y} onChange={(e) => setForm({...form, velocity_y: Number(e.target.value)})} />
             <input className="input input-bordered" type="number" placeholder="Z"
-              value={form?.velocity_z ?? ""} onChange={(e) => handleChange("velocity_z", e.target.value)} />
+              value={form.velocity_z} onChange={(e) => setForm({...form, velocity_z: Number(e.target.value)})} />
           </div>
         </div>
 
@@ -999,27 +1026,45 @@ interface EditStarModalProps {
   }>;
 }
 
-const EditStarModal = ({ presetId, starId, onUpdated, initialData }: EditStarModalProps) => {
-  const [form, setForm] = useState<EditStarModalProps["initialData"]>(
-    initialData || {}
-  );
+const EditStarModal = ({
+  presetId,
+  starId,
+  onUpdated,
+  initialData,
+}: EditStarModalProps) => {
+  const [form, setForm] = useState(() => ({
+    name: "",
+    mass: 0,
+    radius: 0,
+    spin: 0,
+    color: "#ffffff",
+    light_intensity: 1,
+    position_x: 0,
+    position_y: 0,
+    position_z: 0,
+    velocity_x: 0,
+    velocity_y: 0,
+    velocity_z: 0,
+  }));
 
-  const numericFields = [
-    "mass", "radius", "spin", "light_intensity",
-    "position_x", "position_y", "position_z",
-    "velocity_x", "velocity_y", "velocity_z"
-  ];
+  useEffect(() => {
+    if (!initialData) return;
 
-  const handleChange = (key: string, value: string) => {
-    setForm(prev => ({
-      ...prev,
-      [key]: value === "" 
-        ? undefined 
-        : numericFields.includes(key) 
-          ? Number(value) 
-          : value
-    }));
-  };
+    setForm({
+      name: initialData.name ?? "",
+      mass: initialData.mass ?? 0,
+      radius: initialData.radius ?? 0,
+      spin: initialData.spin ?? 0,
+      color: initialData.color ?? "#ffffff",
+      light_intensity: initialData.light_intensity ?? 1,
+      position_x: initialData.position_x ?? 0,
+      position_y: initialData.position_y ?? 0,
+      position_z: initialData.position_z ?? 0,
+      velocity_x: initialData.velocity_x ?? 0,
+      velocity_y: initialData.velocity_y ?? 0,
+      velocity_z: initialData.velocity_z ?? 0,
+    });
+  }, [initialData]);
 
   const handleSubmit = async () => {
     if (!presetId || !starId) {
@@ -1046,7 +1091,6 @@ const EditStarModal = ({ presetId, starId, onUpdated, initialData }: EditStarMod
       console.log("Star updated!");
       onUpdated?.();
       window.location.reload();
-
     } catch (err) {
       console.error("Error updating star:", err);
     }
@@ -1061,8 +1105,8 @@ const EditStarModal = ({ presetId, starId, onUpdated, initialData }: EditStarMod
         <input
           className="input input-bordered"
           placeholder="Name"
-          value={form?.name || ""}
-          onChange={(e) => handleChange("name", e.target.value)}
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
         />
 
         <div className="grid grid-cols-2 gap-2">
@@ -1070,15 +1114,20 @@ const EditStarModal = ({ presetId, starId, onUpdated, initialData }: EditStarMod
             className="input input-bordered"
             type="number"
             placeholder="Mass"
-            value={form?.mass ?? ""}
-            onChange={(e) => handleChange("mass", e.target.value)}
+            value={form.mass}
+            onChange={(e) =>
+              setForm({ ...form, mass: Number(e.target.value) })
+            }
           />
+
           <input
             className="input input-bordered"
             type="number"
             placeholder="Radius"
-            value={form?.radius ?? ""}
-            onChange={(e) => handleChange("radius", e.target.value)}
+            value={form.radius}
+            onChange={(e) =>
+              setForm({ ...form, radius: Number(e.target.value) })
+            }
           />
         </div>
 
@@ -1086,15 +1135,19 @@ const EditStarModal = ({ presetId, starId, onUpdated, initialData }: EditStarMod
           className="input input-bordered"
           type="number"
           placeholder="Spin"
-          value={form?.spin ?? ""}
-          onChange={(e) => handleChange("spin", e.target.value)}
+          value={form.spin}
+          onChange={(e) =>
+            setForm({ ...form, spin: Number(e.target.value) })
+          }
         />
 
         <input
           className="input input-bordered"
           type="color"
-          value={form?.color || "#ffffff"}
-          onChange={(e) => handleChange("color", e.target.value)}
+          value={form.color}
+          onChange={(e) =>
+            setForm({ ...form, color: e.target.value })
+          }
         />
 
         {/* STAR SPECIFIC */}
@@ -1102,33 +1155,104 @@ const EditStarModal = ({ presetId, starId, onUpdated, initialData }: EditStarMod
           className="input input-bordered"
           type="number"
           placeholder="Light Intensity"
-          value={form?.light_intensity ?? ""}
-          onChange={(e) => handleChange("light_intensity", e.target.value)}
+          value={form.light_intensity}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              light_intensity: Number(e.target.value),
+            })
+          }
         />
 
         {/* POSITION */}
         <div>
           <div className="font-semibold">Position</div>
+
           <div className="grid grid-cols-3 gap-2">
-            <input className="input input-bordered" type="number" placeholder="X"
-              value={form?.position_x ?? ""} onChange={(e) => handleChange("position_x", e.target.value)} />
-            <input className="input input-bordered" type="number" placeholder="Y"
-              value={form?.position_y ?? ""} onChange={(e) => handleChange("position_y", e.target.value)} />
-            <input className="input input-bordered" type="number" placeholder="Z"
-              value={form?.position_z ?? ""} onChange={(e) => handleChange("position_z", e.target.value)} />
+            <input
+              className="input input-bordered"
+              type="number"
+              placeholder="X"
+              value={form.position_x}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  position_x: Number(e.target.value),
+                })
+              }
+            />
+
+            <input
+              className="input input-bordered"
+              type="number"
+              placeholder="Y"
+              value={form.position_y}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  position_y: Number(e.target.value),
+                })
+              }
+            />
+
+            <input
+              className="input input-bordered"
+              type="number"
+              placeholder="Z"
+              value={form.position_z}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  position_z: Number(e.target.value),
+                })
+              }
+            />
           </div>
         </div>
 
         {/* VELOCITY */}
         <div>
           <div className="font-semibold">Velocity</div>
+
           <div className="grid grid-cols-3 gap-2">
-            <input className="input input-bordered" type="number" placeholder="X"
-              value={form?.velocity_x ?? ""} onChange={(e) => handleChange("velocity_x", e.target.value)} />
-            <input className="input input-bordered" type="number" placeholder="Y"
-              value={form?.velocity_y ?? ""} onChange={(e) => handleChange("velocity_y", e.target.value)} />
-            <input className="input input-bordered" type="number" placeholder="Z"
-              value={form?.velocity_z ?? ""} onChange={(e) => handleChange("velocity_z", e.target.value)} />
+            <input
+              className="input input-bordered"
+              type="number"
+              placeholder="X"
+              value={form.velocity_x}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  velocity_x: Number(e.target.value),
+                })
+              }
+            />
+
+            <input
+              className="input input-bordered"
+              type="number"
+              placeholder="Y"
+              value={form.velocity_y}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  velocity_y: Number(e.target.value),
+                })
+              }
+            />
+
+            <input
+              className="input input-bordered"
+              type="number"
+              placeholder="Z"
+              value={form.velocity_z}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  velocity_z: Number(e.target.value),
+                })
+              }
+            />
           </div>
         </div>
 

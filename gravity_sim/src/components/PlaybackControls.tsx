@@ -37,6 +37,28 @@ const PlaybackControls = ({playing, setPlaying, speed, setSpeed} : PlaybackProps
                     <li><a onClick={() => setSpeed(1)}>1x</a></li>
                     <li><a onClick={() => setSpeed(2)}>2x</a></li>
                     <li><a onClick={() => setSpeed(4)}>4x</a></li>
+                    <li><a onClick={() => setSpeed(10)}>10x</a></li>
+                    <li className="mt-2 border-t pt-2">
+                        <label className="input input-sm input-bordered flex items-center gap-2">
+                        <span>Custom</span>
+                        <input
+                            type="number"
+                            min="0"
+                            step="0.1"
+                            placeholder="Speed"
+                            className="w-20"
+                            onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                const value = parseFloat((e.target as HTMLInputElement).value);
+                                if (!isNaN(value) && value >= 0) {
+                                setSpeed(value);
+                                }
+                            }
+                            }}
+                        />
+                        <span>x</span>
+                        </label>
+                    </li>
                 </ul>
             </div>
         </div>

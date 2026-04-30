@@ -170,11 +170,11 @@ export default function VisualizeBody({ bodyData, setFocus }: Props) {
           <Trail
             width={60}
             color={bodyData.color}
-            length={20}
-            decay={.8}
+            length={200}
+            decay={2}
             local={false}
             stride={0}
-            interval={2}
+            interval={1}
             attenuation={(width) => width}
           >
             <mesh 

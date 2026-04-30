@@ -25,6 +25,7 @@ import GridControls from "../components/GridControls";
 import GraphicsControls from "../components/GraphicsControls";
 import PlaybackControls from "../components/PlaybackControls";
 import Inspector from "../components/Inspector";
+import { GravityController } from "../components/CalculateGravity";
 
 const DEFAULT_PLANET_TEXTURE = "2k_earth_daymap.jpg";
 const DEFAULT_STAR_TEXTURE = "2k_sun.jpg";
@@ -34,17 +35,17 @@ interface PhysicsTickProps {
   bodies: CelestialBody[];
   playing: boolean;
   speed: number;
+  gravityMethod: string;
 }
 
-function PhysicsTick({ bodies, playing, speed }: PhysicsTickProps) {
+function PhysicsTick({ bodies, playing, speed, gravityMethod }: PhysicsTickProps) {
   useFrame((_, delta) => {
     if (!playing) return;
 
-    const safeDelta = Math.min(delta, 0.016); // cap at ~60fps timestep
+    const safeDelta = Math.min(delta, 0.016);
     const scaledDelta = safeDelta * speed;
 
-    CalculateGravity(bodies, scaledDelta);
-    bodies.forEach(body => body.updatePosition(scaledDelta));
+    CalculateGravity(bodies, scaledDelta, gravityMethod);
   });
 
   return null;
@@ -62,6 +63,7 @@ export default function Scene() {
   const [shadows, setShadows] = useState(true);
   const [playing, setPlaying] = useState(true);
   const [speed, setSpeed] = useState(1);
+  const [gravityMethod, setGravityMethod] = useState("leapfrog");
 
   const presetID = Number(searchParams.get("preset"));
 
@@ -139,7 +141,7 @@ export default function Scene() {
 
         {showGrid && <Grid bodies={bodies} />}
 
-        <PhysicsTick bodies={bodies} playing={playing} speed={speed} />
+        <PhysicsTick bodies={bodies} playing={playing} speed={speed} gravityMethod={gravityMethod} />
       </Canvas>
 
       {/* UI Overlay */}
@@ -149,6 +151,7 @@ export default function Scene() {
           <Link to={"/"} className="text-xl font-bold">Space<span className="text-info">Box</span></Link>
           {/* Grid Controls */}
           <div>
+            <GravityController gravityMethod={gravityMethod} setGravityMethod={setGravityMethod} />
             <GridControls showGrid={showGrid} setShowGrid={setShowGrid} />
             <GraphicsControls antiAlias={antiAlias} setAntiAlias={setAntiAlias} dpr={dpr} setDpr={setDpr} powerPreference={powerPreference} setPowerPreference={setPowerPreference} shadows={shadows} setShadows={setShadows} />
           </div>
